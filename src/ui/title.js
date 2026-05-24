@@ -37,6 +37,26 @@ export class Title {
     document.getElementById("title-settings").addEventListener("click", () => this.onSettings?.());
     document.getElementById("title-profiles").addEventListener("click", () => this.onShowProfiles?.());
     document.getElementById("title-help").addEventListener("click", () => this.onShowHelp?.());
+
+    // Keyboard menu navigation: arrows move focus between the buttons; Enter /
+    // Space activate the focused button natively. Only active while the title
+    // is visible, so it never interferes with in-game driving (← / →).
+    this._buttons = [...document.querySelectorAll("#title-buttons button")];
+    window.addEventListener("keydown", (e) => {
+      if (this.el.hidden) return;
+      const nav = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
+      if (!nav.includes(e.key)) return;
+      e.preventDefault();
+      const btns = this._buttons;
+      if (!btns.length) return;
+      const i = btns.indexOf(document.activeElement);
+      let next;
+      if (e.key === "Home") next = 0;
+      else if (e.key === "End") next = btns.length - 1;
+      else if (e.key === "ArrowDown" || e.key === "ArrowRight") next = i < 0 ? 0 : (i + 1) % btns.length;
+      else next = i < 0 ? 0 : (i - 1 + btns.length) % btns.length;
+      btns[next]?.focus();
+    });
   }
 
   show() {
