@@ -4,6 +4,8 @@
 // verfügbarer Sounds) kommt direkt aus data/RuleEditor.json. So sehen wir
 // genau das, was der Originalentwickler editieren konnte.
 
+import { t, onLangChange } from "../i18n/index.js";
+
 export class WeaponEditor {
   constructor(data, assets, onApply) {
     this.data = data;
@@ -22,6 +24,7 @@ export class WeaponEditor {
     this._schema = data.weaponEditorSchema();      // { types, sounds }
     this._weapons = null;                          // tiefe Kopie zum Edit
     this._selectedKey = null;
+    onLangChange(() => { if (!this.el.hidden) { this._renderList(); this._renderForm(); } });
   }
 
   /** @param modeName  Rule-Set-Name, dessen weapons editiert werden
@@ -74,7 +77,7 @@ export class WeaponEditor {
     head.innerHTML = `
       <span class="weditor-formkey">${escapeHtml(this._selectedKey)}</span>
       <span class="weditor-formtype">${escapeHtml(w.type)}</span>
-      <button class="weditor-delete">Löschen</button>
+      <button class="weditor-delete">${escapeHtml(t("weaponEditor.delete"))}</button>
     `;
     head.querySelector(".weditor-delete").addEventListener("click", () => this._deleteWeapon());
     this.formEl.appendChild(head);
@@ -89,7 +92,9 @@ export class WeaponEditor {
     const row = document.createElement("div");
     row.className = "weditor-field";
     const label = document.createElement("label");
-    label.textContent = field.name;
+    const fk = "field." + field.key;
+    const fl = t(fk);
+    label.textContent = (fl === fk) ? field.name : fl;   // fall back to schema label
     row.appendChild(label);
 
     const inputWrap = document.createElement("div");
@@ -156,7 +161,7 @@ export class WeaponEditor {
       }
       default:
         const span = document.createElement("span");
-        span.textContent = `(unbekannter Typ: ${field.type})`;
+        span.textContent = t("weaponEditor.unknownType", { type: field.type });
         span.style.color = "#888";
         inputWrap.appendChild(span);
     }
@@ -221,7 +226,7 @@ export class WeaponEditor {
     for (const o of items) {
       const opt = document.createElement("option");
       opt.value = o;
-      opt.textContent = o || "— keine —";
+      opt.textContent = o || t("common.none");
       if (o === current) opt.selected = true;
       sel.appendChild(opt);
     }
@@ -286,7 +291,7 @@ export class WeaponEditor {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "weditor-subedit-btn";
-    btn.textContent = "✎ bearbeiten";
+    btn.textContent = t("weaponEditor.editSub");
     btn._sub = name || "";
     btn.update = (n) => { btn._sub = n || ""; btn.disabled = !btn._sub || !this._weapons[btn._sub]; };
     btn.addEventListener("click", () => {
@@ -326,7 +331,7 @@ export class WeaponEditor {
         rm.type = "button";
         rm.className = "weditor-subrm";
         rm.textContent = "✕";
-        rm.title = "Entfernen";
+        rm.title = t("weaponEditor.remove");
         rm.addEventListener("click", () => { w[key].splice(idx, 1); rebuild(); });
         rowEl.appendChild(sel);
         rowEl.appendChild(rm);
@@ -335,7 +340,7 @@ export class WeaponEditor {
       const add = document.createElement("button");
       add.type = "button";
       add.className = "weditor-subadd";
-      add.textContent = "+ hinzufügen";
+      add.textContent = t("weaponEditor.add");
       add.addEventListener("click", () => { w[key].push(opts[0] || ""); rebuild(); });
       wrap.appendChild(add);
     };
@@ -351,24 +356,24 @@ export class WeaponEditor {
   _newWeapon() {
     const types = Object.keys(this._schema.types);
     if (types.length === 0) return;
-    const t = prompt("Welcher Typ?\n" + types.join(", "), types[0]);
-    if (!t || !this._schema.types[t]) return;
-    let key = prompt("Eindeutiger Schlüssel (z.B. \"myCannon\"):", "neueWaffe");
+    const typ = prompt(t("weaponEditor.promptType", { types: types.join(", ") }), types[0]);
+    if (!typ || !this._schema.types[typ]) return;
+    let key = prompt(t("weaponEditor.promptKey"), t("weaponEditor.newKeyDefault"));
     if (!key) return;
     key = key.trim();
     if (!key || this._weapons[key]) {
-      alert("Schlüssel leer oder schon vergeben.");
+      alert(t("weaponEditor.keyTaken"));
       return;
     }
-    // Sinnvolle Defaults pro Typ:
-    const defaults = { name: key, type: t, price: 1000 };
-    if (t === "shell" || t === "nuke" || t === "penetrator" || t === "roller" || t === "skylance") {
+    // Sensible defaults per type:
+    const defaults = { name: key, type: typ, price: 1000 };
+    if (typ === "shell" || typ === "nuke" || typ === "penetrator" || typ === "roller" || typ === "skylance") {
       defaults.damage = 20; defaults.blastRadius = 8;
-    } else if (t === "clusterBomb") {
+    } else if (typ === "clusterBomb") {
       defaults.count = 5; defaults.apexFuse = true; defaults.burstPowerX = 30; defaults.burstPowerY = 3;
-    } else if (t === "groundBurst") {
+    } else if (typ === "groundBurst") {
       defaults.count = 5; defaults.burstPower = 40;
-    } else if (t === "machineGun") {
+    } else if (typ === "machineGun") {
       defaults.groups = 10; defaults.shotsPerGroup = 1; defaults.delayBetweenGroups = 6;
       defaults.angleVariance = 5; defaults.powerVariance = 3;
     }
@@ -380,7 +385,7 @@ export class WeaponEditor {
 
   _deleteWeapon() {
     if (!this._selectedKey) return;
-    if (!confirm(`Waffe "${this._selectedKey}" wirklich löschen?`)) return;
+    if (!confirm(t("weaponEditor.confirmDelete", { key: this._selectedKey }))) return;
     delete this._weapons[this._selectedKey];
     const keys = Object.keys(this._weapons).sort();
     this._selectedKey = keys[0] ?? null;
@@ -389,7 +394,7 @@ export class WeaponEditor {
   }
 
   _reset() {
-    if (!confirm("Alle Waffen-Änderungen verwerfen und Defaults laden?")) return;
+    if (!confirm(t("weaponEditor.confirmReset"))) return;
     const base = this.data.ruleSet(this._activeMode);
     this._weapons = JSON.parse(JSON.stringify(base.weapons));
     this._selectedKey = Object.keys(this._weapons).sort()[0] ?? null;

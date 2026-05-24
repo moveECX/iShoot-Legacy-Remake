@@ -2,6 +2,8 @@
 // des aktiven Rule-Sets. Liefert beim Schließen ein Override-Objekt,
 // das main.applyRuleOverrides auf die Standard-Werte legt.
 
+import { t, onLangChange } from "../i18n/index.js";
+
 const FIELDS = [
   { key: "gravity",                 label: "Gravity",                  min: 0,   max: 400, step: 1,   type: "int" },
   { key: "maxWind",                 label: "Max-Wind",                 min: 0,   max: 200, step: 1,   type: "int" },
@@ -34,10 +36,12 @@ export class RuleEditor {
     document.getElementById("ruleeditor-apply").addEventListener("click", () => this._apply());
     this.activeMode = "Default Rules";
     this._inputs = new Map();
+    onLangChange(() => { if (!this.el.hidden) this.open(this.activeMode, this._lastOverrides || {}); });
   }
 
   open(modeName, currentOverrides = {}) {
     this.activeMode = modeName;
+    this._lastOverrides = currentOverrides;
     const base = this.data.ruleSet(modeName);
     this.modeLabel.textContent = base.rulesetName;
     this.list.innerHTML = "";
@@ -49,19 +53,19 @@ export class RuleEditor {
       row.className = "rule-row";
       if (f.type === "bool") {
         row.innerHTML = `
-          <label>${f.label}</label>
+          <label>${t("rule." + f.key)}</label>
           <label class="rule-toggle">
             <input type="checkbox" ${curVal ? "checked" : ""}>
-            <span>${baseVal ? "an" : "aus"} (default)</span>
+            <span>${baseVal ? t("common.on") : t("common.off")} (${t("common.default")})</span>
           </label>
         `;
         this._inputs.set(f.key, { input: row.querySelector("input"), field: f, base: baseVal });
       } else {
         row.innerHTML = `
-          <label>${f.label}</label>
+          <label>${t("rule." + f.key)}</label>
           <div class="rule-numeric">
             <input type="number" min="${f.min}" max="${f.max}" step="${f.step}" value="${curVal}">
-            <span class="rule-default">def ${baseVal}</span>
+            <span class="rule-default">${t("rules.def", { v: baseVal })}</span>
           </div>
         `;
         this._inputs.set(f.key, { input: row.querySelector("input"), field: f, base: baseVal });

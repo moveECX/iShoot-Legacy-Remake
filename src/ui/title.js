@@ -2,6 +2,7 @@
 // Tank links und Buttons rechts (Neues Spiel / Laden / Bestenliste / Hilfe).
 
 import { drawSprite, tintSprite } from "../engine/render.js";
+import { t } from "../i18n/index.js";
 
 const W = 480, H = 320;
 
@@ -30,7 +31,7 @@ export class Title {
     this._bg = new Image();
     this._bgReady = false;
     this._bg.onload = () => { this._bgReady = true; };
-    this._bg.src = "./assets/ui/title_background.jpg";
+    this._bg.src = "./assets/ui/background.jpg";
     document.getElementById("title-newgame").addEventListener("click", () => { this.hide(); this.onNewGame?.(); });
     document.getElementById("title-load").addEventListener("click", () => this.onLoad?.());
     document.getElementById("title-settings").addEventListener("click", () => this.onSettings?.());
@@ -114,6 +115,6 @@ export class Title {
     ctx.shadowColor = "transparent";
     ctx.font = "11px ui-monospace, monospace";
     ctx.fillStyle = "#ffe5b3";
-    ctx.fillText("Fan-Remake · Original von Ethan Nicholas", this.canvas.width / 2, 84);
+    ctx.fillText(t("title.tagline"), this.canvas.width / 2, 84);
   }
 }

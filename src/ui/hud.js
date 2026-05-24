@@ -1,6 +1,10 @@
 // HUD: oberer Streifen mit Wind, aktivem Spieler und Aim.
 // Power-Bar unten links während des Ladens.
 
+import { t } from "../i18n/index.js";
+import { settings } from "./settings.js";
+import { POWER_SCALE, GRAVITY_FACTOR, WIND_FACTOR } from "../game/weapon.js";
+
 const WIDTH = 480;
 const HEIGHT = 320;
 
@@ -62,6 +66,9 @@ export class Hud {
     ctx.font = "10px ui-monospace, Menlo, monospace";
     ctx.textBaseline = "alphabetic";
 
+    // Cheat mode: draw the exact predicted trajectory (wind + angle).
+    if (settings.cheat) this._drawTrajectory(ctx);
+
     // Oberer Streifen kompakt in 8px; unten wird wieder auf 10px gesetzt.
     ctx.font = "8px ui-monospace, Menlo, monospace";
 
@@ -70,7 +77,7 @@ export class Hud {
     ctx.fillStyle = "rgba(0,0,0,.55)";
     ctx.fillRect(WIDTH / 2 - 28, 2, 56, 12);
     ctx.fillStyle = "#fff";
-    ctx.fillText(`Wind ${m.wind.toFixed(1)}`, WIDTH / 2, 10);
+    ctx.fillText(t("hud.wind", { v: m.wind.toFixed(1) }), WIDTH / 2, 10);
     this._drawWindArrow(ctx, WIDTH / 2, 20, m.wind);
 
     // Linke Kante des Waffennamen-Felds (unten rechts) — für die Platzierung
@@ -87,12 +94,12 @@ export class Hud {
       ctx.fillStyle = `rgb(${(c.r * 255) | 0},${(c.g * 255) | 0},${(c.b * 255) | 0})`;
       ctx.fillText(cur.name, 5, 10);
       ctx.fillStyle = "#fff";
-      ctx.fillText(`HP ${cur.health.toFixed(0)}   $${fmtCash(cur.cash)}`, 5, 20);
+      ctx.fillText(`${t("hud.hp")} ${cur.health.toFixed(0)}   $${fmtCash(cur.cash)}`, 5, 20);
 
       // Fuel-Balken (analog zur HP-Bar über den Tanks).
       const maxFuel = m.rules.fuel ?? 0;
       ctx.fillStyle = "#fff";
-      ctx.fillText("Fuel", 5, 30);
+      ctx.fillText(t("hud.fuel"), 5, 30);
       const fbX = 28, fbY = 25, fbW = 74, fbH = 5;
       ctx.fillStyle = "rgba(255,255,255,.18)";
       ctx.fillRect(fbX, fbY, fbW, fbH);
@@ -112,7 +119,7 @@ export class Hud {
       ctx.fillStyle = "rgba(0,0,0,.55)";
       ctx.fillRect(WIDTH - 62, 2, 60, 12);
       ctx.fillStyle = "#fff";
-      ctx.fillText(`Aim ${angleDeg}° ${cur.facingLeft ? "◀" : "▶"}`, WIDTH - 5, 10);
+      ctx.fillText(`${t("hud.aim", { deg: angleDeg })} ${cur.facingLeft ? "◀" : "▶"}`, WIDTH - 5, 10);
 
       // Ab hier wieder normale 10px-Schrift (Waffenfeld unten rechts).
       ctx.font = "10px ui-monospace, Menlo, monospace";
@@ -167,9 +174,9 @@ export class Hud {
       ctx.fillRect(WIDTH / 2 - 130, HEIGHT - 78, 260, 28);
       ctx.textAlign = "center";
       ctx.fillStyle = "#ffd06b";
-      ctx.fillText("Maustaste halten, um die Schusskraft zu laden.", WIDTH / 2, HEIGHT - 66);
+      ctx.fillText(t("hud.powerTip1"), WIDTH / 2, HEIGHT - 66);
       ctx.fillStyle = "#aaa";
-      ctx.fillText("Loslassen zum Feuern.", WIDTH / 2, HEIGHT - 56);
+      ctx.fillText(t("hud.powerTip2"), WIDTH / 2, HEIGHT - 56);
     }
 
     // -- Power-Bar links unten (Zahl zentriert unter der Bar)
@@ -196,7 +203,7 @@ export class Hud {
     //    er gerade davor passt (aber nicht über den linken Rand hinaus).
     {
       ctx.font = "9px ui-monospace, Menlo, monospace";
-      const rtText = `Round ${m.round} of ${m.totalRounds} · Turn ${m.turn}`;
+      const rtText = t("hud.round", { r: m.round, t: m.totalRounds, n: m.turn });
       const rtW = ctx.measureText(rtText).width;
       const padX = 5, boxH = 13;
       const half = rtW / 2 + padX;
@@ -223,7 +230,7 @@ export class Hud {
       ctx.font = "14px ui-monospace, Menlo, monospace";
       ctx.fillStyle = "#ffd06b";
       const w = m._roundWinner;
-      ctx.fillText(w ? `Runde ${m.round} → ${w.name} gewinnt!` : `Runde ${m.round} beendet`, WIDTH / 2, HEIGHT / 2);
+      ctx.fillText(w ? t("hud.roundWin", { r: m.round, w: w.name }) : t("hud.roundEnd", { r: m.round }), WIDTH / 2, HEIGHT / 2);
       ctx.fillStyle = "#fff";
       ctx.font = "10px ui-monospace, Menlo, monospace";
       // Punktestand
@@ -238,16 +245,42 @@ export class Hud {
       ctx.textAlign = "center";
       ctx.font = "16px ui-monospace, Menlo, monospace";
       ctx.fillStyle = "#fff";
-      const msg = m.winner ? `${m.winner.name} gewinnt das Match!` : "Alle besiegt";
+      const msg = m.winner ? t("hud.matchWin", { name: m.winner.name }) : t("hud.allDefeated");
       ctx.fillText(msg, WIDTH / 2, HEIGHT / 2 - 10);
       ctx.font = "10px ui-monospace, Menlo, monospace";
       ctx.fillStyle = "#fff";
       const score = m.tanks.map((t) => `${t.name}: ${t.wins}W ${t.kills}K`).join("   ");
       ctx.fillText(score, WIDTH / 2, HEIGHT / 2 + 12);
       ctx.fillStyle = "#bbb";
-      ctx.fillText("R = neues Spiel · Esc = Pause-Menü", WIDTH / 2, HEIGHT / 2 + 30);
+      ctx.fillText(t("hud.gameOverHint"), WIDTH / 2, HEIGHT / 2 + 30);
     }
 
+    ctx.restore();
+  }
+
+  /** Cheat mode: predicted shot path using the exact weapon physics
+   *  (semi-implicit Euler with wind + gravity). Updates live while charging. */
+  _drawTrajectory(ctx) {
+    const m = this.match;
+    const cur = m.currentTank?.();
+    if (!cur || cur.isDead() || cur.controller !== 0 || m.state !== "aim") return;
+    const power = this.charging ? this.power : 60;
+    if (power <= 0) return;
+    const tip = cur.barrelTip();
+    const dir = cur.facingLeft ? -1 : 1;
+    let x = tip.x, y = tip.y;
+    let xv = dir * Math.cos(cur.angle) * power * POWER_SCALE;
+    let yv = -Math.sin(cur.angle) * power * POWER_SCALE;
+    const g = m.rules.gravity * GRAVITY_FACTOR;
+    const w = m.wind * WIND_FACTOR;
+    ctx.save();
+    ctx.fillStyle = "rgba(140,255,170,.9)";
+    for (let i = 0; i < 400; i++) {
+      x += xv; y += yv; xv += w; yv += g;
+      if (x < -20 || x > m.width + 20 || y > m.height + 20) break;
+      if (y >= 0 && m.dirtField.isSolid(x, y)) break;
+      if (i % 4 === 0) ctx.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
+    }
     ctx.restore();
   }
 

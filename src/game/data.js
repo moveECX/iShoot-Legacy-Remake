@@ -77,7 +77,7 @@ export class GameData {
         if (!allWeapons[k]) allWeapons[k] = w;   // erste Definition gewinnt
       }
     }
-    const merged = { ...base, rulesetName: "Alle Waffen", weapons: allWeapons };
+    const merged = { ...base, rulesetName: "All Weapons", weapons: allWeapons };
     this.rules.push(merged);
   }
 

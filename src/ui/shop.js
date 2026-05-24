@@ -1,6 +1,8 @@
 // HTML-Overlay-Shop. Während "aim" mit der S-Taste oder per Button öffnen.
 
 import { fmtCash } from "./hud.js";
+import { t, tDesc, onLangChange } from "../i18n/index.js";
+import { settings } from "./settings.js";
 
 export class Shop {
   /**
@@ -16,6 +18,7 @@ export class Shop {
     this.listEl = document.getElementById("shop-list");
     document.getElementById("shop-close").addEventListener("click", () => this.close());
     document.getElementById("shop-done").addEventListener("click", () => this.close());
+    onLangChange(() => { if (this.isOpen) this.render(); });
     this.isOpen = false;
   }
 
@@ -41,7 +44,7 @@ export class Shop {
     const m = this.match;
     const tank = m.currentTank();
     if (!tank) return;
-    this.titleEl.textContent = `Shop — ${tank.name}`;
+    this.titleEl.textContent = t("shop.title", { name: tank.name });
     this.cashEl.textContent = `$${fmtCash(tank.cash)}`;
     this.listEl.innerHTML = "";
     const rules = m.rules;
@@ -55,7 +58,7 @@ export class Shop {
       const sellPrice = Math.floor(price * 0.5);
       const owned = tank.weapons.find((w) => w.key === key);
       const ownedCount = owned ? owned.count : 0;
-      const canBuy = tank.cash >= price;
+      const canBuy = settings.cheat || tank.cash >= price;
       const canSell = ownedCount > 0 && ownedCount !== -1;
 
       const row = document.createElement("div");
@@ -66,11 +69,11 @@ export class Shop {
         <span class="shop-price">$${fmtCash(price)}</span>
         <span class="shop-owned">×${ownedCount}</span>
         <span class="shop-actions">
-          <button class="shop-buy"  ${canBuy ? "" : "disabled"}>Kaufen</button>
-          <button class="shop-sell" ${canSell ? "" : "disabled"} title="Verkaufen für $${fmtCash(sellPrice)}">Verkaufen</button>
+          <button class="shop-buy"  ${canBuy ? "" : "disabled"}>${t("shop.buy")}</button>
+          <button class="shop-sell" ${canSell ? "" : "disabled"} title="${t("shop.sellFor", { price: fmtCash(sellPrice) })}">${t("shop.sell")}</button>
         </span>
       `;
-      if (cfg.description) row.title = cfg.description;
+      if (cfg.description) row.title = tDesc(cfg.description);
       row.querySelector(".shop-buy").addEventListener("click", (e) => { e.stopPropagation(); this.buy(key); });
       row.querySelector(".shop-sell").addEventListener("click", (e) => { e.stopPropagation(); this.sell(key); });
       this.listEl.appendChild(row);
@@ -80,8 +83,11 @@ export class Shop {
   buy(key) {
     const tank = this.match.currentTank();
     const cfg = this.match.rules.weapons[key];
-    if (!tank || !cfg || tank.cash < +cfg.price) return;
-    tank.cash -= +cfg.price;
+    if (!tank || !cfg) return;
+    if (!settings.cheat) {
+      if (tank.cash < +cfg.price) return;
+      tank.cash -= +cfg.price;
+    }
     const existing = tank.weapons.find((w) => w.key === key);
     if (existing) existing.count++;
     else tank.weapons.push({ key, count: 1 });

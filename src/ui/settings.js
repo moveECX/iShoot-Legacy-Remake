@@ -1,5 +1,7 @@
-// Einstellungen: Render-Auflösung, Tastatur/Maus-Belegung, Audio.
-// Persistiert in localStorage. Render-Scale wird beim nächsten Match aktiv.
+// Settings: render resolution, key/mouse bindings, audio, language, cheat.
+// Persisted in localStorage. Render scale takes effect on the next match.
+
+import { LANG_NAMES, getLang, setLang, t } from "../i18n/index.js";
 
 const STORAGE_KEY = "ishoot.settings.v1";
 
@@ -13,22 +15,13 @@ export const DEFAULT_KEYS = {
   newMap:     "KeyR",
 };
 
-const KEY_LABELS = {
-  driveLeft:  "Fahren ←",
-  driveRight: "Fahren →",
-  prevWeapon: "Waffe zurück",
-  nextWeapon: "Waffe vor",
-  shop:       "Shop öffnen",
-  pause:      "Pause",
-  newMap:     "Zurück ins Menü",
-};
-
-/** Globales Settings-Objekt — von main.js direkt gelesen. */
+/** Global settings object — read directly by main.js. */
 export const settings = {
   renderScale: 2,
   soundOn: true,
   musicOn: true,
   musicVolume: 0.25,
+  cheat: false,
   keys: { ...DEFAULT_KEYS },
 };
 
@@ -41,6 +34,7 @@ export function loadSettings() {
       if (typeof s.soundOn === "boolean") settings.soundOn = s.soundOn;
       if (typeof s.musicOn === "boolean") settings.musicOn = s.musicOn;
       if (typeof s.musicVolume === "number") settings.musicVolume = s.musicVolume;
+      if (typeof s.cheat === "boolean") settings.cheat = s.cheat;
       settings.keys = { ...DEFAULT_KEYS, ...(s.keys || {}) };
     }
   } catch { /* defaults */ }
@@ -74,7 +68,19 @@ export class SettingsUI {
     this.musicCb = document.getElementById("settings-music");
     this.volSlider = document.getElementById("settings-volume");
     this.keyList = document.getElementById("settings-keys");
-    this._rebinding = null;   // aktuell zu bindende Aktion
+    this.langSel = document.getElementById("settings-language");
+    this.cheatCb = document.getElementById("settings-cheat");
+    this._rebinding = null;   // action currently being rebound
+
+    // Language dropdown (native names) — switches the UI language live.
+    if (this.langSel) {
+      for (const [code, name] of Object.entries(LANG_NAMES)) {
+        const o = document.createElement("option");
+        o.value = code; o.textContent = name;
+        this.langSel.appendChild(o);
+      }
+      this.langSel.addEventListener("change", () => { setLang(this.langSel.value); this._renderKeys(); });
+    }
 
     document.getElementById("settings-close").addEventListener("click", () => this.close());
     document.getElementById("settings-apply").addEventListener("click", () => this._apply());
@@ -100,6 +106,8 @@ export class SettingsUI {
     this.soundCb.checked = settings.soundOn;
     this.musicCb.checked = settings.musicOn;
     this.volSlider.value = String(Math.round(settings.musicVolume * 100));
+    if (this.langSel) this.langSel.value = getLang();
+    if (this.cheatCb) this.cheatCb.checked = settings.cheat;
     this._renderKeys();
     this.el.hidden = false;
   }
@@ -113,9 +121,9 @@ export class SettingsUI {
       row.className = "settings-keyrow";
       const isRebinding = this._rebinding === action;
       row.innerHTML = `
-        <span class="settings-keylabel">${KEY_LABELS[action]}</span>
+        <span class="settings-keylabel">${t("keys." + action)}</span>
         <button class="settings-keybtn${isRebinding ? " settings-keybtn--active" : ""}">
-          ${isRebinding ? "Taste drücken…" : prettyKey(settings.keys[action])}
+          ${isRebinding ? t("settings.pressKey") : prettyKey(settings.keys[action])}
         </button>
       `;
       row.querySelector("button").addEventListener("click", () => {
@@ -131,6 +139,7 @@ export class SettingsUI {
     settings.soundOn = this.soundCb.checked;
     settings.musicOn = this.musicCb.checked;
     settings.musicVolume = Math.max(0, Math.min(1, (+this.volSlider.value || 0) / 100));
+    if (this.cheatCb) settings.cheat = this.cheatCb.checked;
     persist();
     this.onApply?.(settings);
     this.close();
@@ -144,5 +153,5 @@ function prettyKey(code) {
     .replace(/^Digit/, "")
     .replace("ArrowLeft", "←").replace("ArrowRight", "→")
     .replace("ArrowUp", "↑").replace("ArrowDown", "↓")
-    .replace("Escape", "Esc").replace("Space", "Leertaste");
+    .replace("Escape", "Esc").replace("Space", t("key.space"));
 }

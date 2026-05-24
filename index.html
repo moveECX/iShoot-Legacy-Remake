@@ -409,6 +409,46 @@
     #weaponeditor-leftbtns { display: flex; gap: 8px; }
     #weaponeditor-new { background: #06301c; border-color: var(--border); color: var(--good); }
     #weaponeditor-new:hover { background: #0c4a2c; color: var(--accent); }
+
+    /* ============ Keyboard navigation ============ */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      box-shadow: 0 0 10px rgba(120,255,170,.5);
+    }
+    /* Icon-only buttons (back to title, help back) */
+    .icon-btn {
+      flex: none; width: 30px; height: 30px; padding: 0;
+      display: grid; place-items: center; font-size: 17px; line-height: 1;
+      background: var(--panel-2); border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius-s); cursor: pointer;
+      transition: background .12s, border-color .12s, color .12s, box-shadow .12s;
+    }
+    .icon-btn:hover { background: #103019; color: var(--accent); border-color: var(--border-2); box-shadow: 0 0 8px rgba(60,220,120,.35); }
+
+    /* Menu header with back button (overrides the plain h2 chrome above) */
+    #menu-head {
+      position: relative; z-index: 2; display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(20,60,36,.55), rgba(7,20,13,.2));
+    }
+    #menu-card h2 { padding: 0; border: none; background: none; }
+
+    /* ============ Help overlay ============ */
+    #help { z-index: 28; }
+    #help-card { width: min(620px, 94vw); }
+    #help-body { line-height: 1.5; position: relative; z-index: 2; }
+    #help-body h4 { margin: 14px 0 6px; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
+    #help-body h4:first-child { margin-top: 0; }
+    #help-body h4::before { content: "// "; color: var(--text-dim); }
+    #help-body p { margin: 0 0 8px; color: var(--text-dim); }
+    #help-controls { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin: 4px 0 8px; align-items: center; }
+    #help-controls .k {
+      font-family: var(--mono); color: var(--text); justify-self: start;
+      background: var(--panel-2); border: 1px solid var(--border); border-radius: 2px; padding: 1px 7px; font-size: 12px;
+    }
+    #help-controls .a { color: var(--text-dim); }
+    #help-tip { color: var(--text-mute); font-size: 11px; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -418,27 +458,27 @@
     <div id="title-card">
       <div id="title-termbar">
         <span class="tb-dot"></span> ISHOOT.SYS
-        <span class="tb-r">TACTICAL ARTILLERY · DEFCON 1</span>
+        <span class="tb-r" data-i18n="title.bar">TACTICAL ARTILLERY · DEFCON 1</span>
       </div>
       <canvas id="title-canvas" width="480" height="320"></canvas>
-      <div id="title-bootline">&gt; system online · select option </div>
+      <div id="title-bootline" data-i18n="title.boot">&gt; system online · select option</div>
       <div id="title-buttons">
-        <button id="title-newgame">Neues Spiel</button>
-        <button id="title-load">Laden</button>
-        <button id="title-settings">Einstellungen</button>
-        <button id="title-profiles">Bestenliste</button>
-        <button id="title-help">Hilfe</button>
+        <button id="title-newgame" data-i18n="title.newGame">New Game</button>
+        <button id="title-load" data-i18n="title.load">Load</button>
+        <button id="title-settings" data-i18n="title.settings">Settings</button>
+        <button id="title-profiles" data-i18n="title.profiles">Leaderboard</button>
+        <button id="title-help" data-i18n="title.help">Help</button>
       </div>
     </div>
   </div>
 
   <div id="pause" class="overlay" hidden>
     <div id="pause-card" class="card">
-      <h3>Pause</h3>
+      <h3 data-i18n="pause.heading">Pause</h3>
       <div id="pause-savelist"></div>
       <div id="pause-actions">
-        <button id="pause-quit" class="btn-danger">Zum Titelbildschirm</button>
-        <button id="pause-resume" class="btn-primary">Weiter</button>
+        <button id="pause-quit" class="btn-danger" data-i18n="pause.quit">Back to title</button>
+        <button id="pause-resume" class="btn-primary" data-i18n="pause.resume">Resume</button>
       </div>
     </div>
   </div>
@@ -446,36 +486,46 @@
   <div id="settings" class="overlay" hidden>
     <div id="settings-card" class="card">
       <div class="modal-header">
-        <h3>Einstellungen</h3>
-        <button id="settings-close" class="modal-x">×</button>
+        <h3 data-i18n="settings.heading">Settings</h3>
+        <button id="settings-close" class="modal-x" data-i18n-title="common.close" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
         <div class="settings-section">
           <label class="settings-row">
-            <span>Render-Auflösung</span>
+            <span data-i18n="settings.language">Language</span>
+            <select id="settings-language"></select>
+          </label>
+        </div>
+        <div class="settings-section">
+          <label class="settings-row">
+            <span data-i18n="settings.renderScale">Render resolution</span>
             <select id="settings-scale">
               <option value="1">1× (480×320)</option>
               <option value="2">2× (960×640)</option>
               <option value="3">3× (1440×960)</option>
             </select>
           </label>
-          <p class="settings-hint">Höher = schärfer + glattere Krater. Wird beim nächsten Spielstart aktiv.</p>
+          <p class="settings-hint" data-i18n="settings.renderHint">Higher = sharper, with smoother craters. Applies on the next game start.</p>
         </div>
         <div class="settings-section">
-          <label class="settings-row"><span>Soundeffekte</span><input type="checkbox" id="settings-sound"></label>
-          <label class="settings-row"><span>Musik</span><input type="checkbox" id="settings-music"></label>
-          <label class="settings-row"><span>Musik-Lautstärke</span><input type="range" id="settings-volume" min="0" max="100"></label>
+          <label class="settings-row"><span data-i18n="settings.sound">Sound effects</span><input type="checkbox" id="settings-sound"></label>
+          <label class="settings-row"><span data-i18n="settings.music">Music</span><input type="checkbox" id="settings-music"></label>
+          <label class="settings-row"><span data-i18n="settings.musicVolume">Music volume</span><input type="range" id="settings-volume" min="0" max="100"></label>
+        </div>
+        <div class="settings-section">
+          <label class="settings-row"><span data-i18n="settings.cheatMode">Cheat mode</span><input type="checkbox" id="settings-cheat"></label>
+          <p class="settings-hint" data-i18n="settings.cheatHint">Draws the exact shot trajectory (wind + angle) and gives unlimited money.</p>
         </div>
         <div class="settings-section">
           <div class="settings-subhead">
-            <span>Tastenbelegung</span>
-            <button id="settings-reset-keys" class="btn-small">Zurücksetzen</button>
+            <span data-i18n="settings.keybindings">Key bindings</span>
+            <button id="settings-reset-keys" class="btn-small" data-i18n="settings.resetKeys">Reset</button>
           </div>
           <div id="settings-keys"></div>
         </div>
       </div>
       <div class="modal-footer">
-        <button id="settings-apply" class="btn-primary">Übernehmen</button>
+        <button id="settings-apply" class="btn-primary" data-i18n="common.apply">Apply</button>
       </div>
     </div>
   </div>
@@ -483,9 +533,9 @@
   <div id="weaponeditor" class="overlay" hidden>
     <div id="weaponeditor-card" class="card">
       <div id="weaponeditor-header">
-        <h3>Waffen-Editor</h3>
+        <h3 data-i18n="weaponEditor.heading">Weapon Editor</h3>
         <span id="weaponeditor-mode"></span>
-        <button id="weaponeditor-close">×</button>
+        <button id="weaponeditor-close" data-i18n-title="common.close" aria-label="Close">×</button>
       </div>
       <div id="weaponeditor-body">
         <div id="weaponeditor-list"></div>
@@ -493,10 +543,10 @@
       </div>
       <div id="weaponeditor-footer">
         <div id="weaponeditor-leftbtns">
-          <button id="weaponeditor-new">+ Neue Waffe</button>
-          <button id="weaponeditor-reset">Defaults</button>
+          <button id="weaponeditor-new" data-i18n="weaponEditor.newWeapon">+ New weapon</button>
+          <button id="weaponeditor-reset" data-i18n="common.defaults">Defaults</button>
         </div>
-        <button id="weaponeditor-apply" class="btn-primary">Übernehmen</button>
+        <button id="weaponeditor-apply" class="btn-primary" data-i18n="common.apply">Apply</button>
       </div>
     </div>
   </div>
@@ -504,36 +554,39 @@
   <div id="ruleeditor" class="overlay" hidden>
     <div id="ruleeditor-card" class="card">
       <div id="ruleeditor-header">
-        <h3>Regeln</h3>
+        <h3 data-i18n="rules.heading">Rules</h3>
         <span id="ruleeditor-mode"></span>
-        <button id="ruleeditor-close">×</button>
+        <button id="ruleeditor-close" data-i18n-title="common.close" aria-label="Close">×</button>
       </div>
       <div id="ruleeditor-list"></div>
       <div id="ruleeditor-footer">
-        <button id="ruleeditor-reset">Defaults</button>
-        <button id="ruleeditor-apply" class="btn-primary">Übernehmen</button>
+        <button id="ruleeditor-reset" data-i18n="common.defaults">Defaults</button>
+        <button id="ruleeditor-apply" class="btn-primary" data-i18n="common.apply">Apply</button>
       </div>
     </div>
   </div>
 
   <div id="menu" class="overlay" hidden>
     <div id="menu-card" class="card">
-      <h2>iShoot Remake</h2>
+      <div id="menu-head">
+        <button id="menu-back" class="icon-btn" data-i18n-title="menu.backToTitle" aria-label="Back to title">←</button>
+        <h2 data-i18n="menu.heading">iShoot Remake</h2>
+      </div>
       <div class="menu-section">
-        <label>Modus</label>
+        <label data-i18n="menu.mode">Mode</label>
         <select id="menu-mode"></select>
-        <label style="margin-left: 12px;">Runden</label>
+        <label style="margin-left: 12px;" data-i18n="menu.rounds">Rounds</label>
         <input id="menu-rounds" type="number" min="1" max="20" value="3" style="width: 56px;">
-        <button id="menu-edit-rules" type="button" style="margin-left: auto;">Regeln…</button>
-        <button id="menu-edit-weapons" type="button">Waffen…</button>
+        <button id="menu-edit-rules" type="button" style="margin-left: auto;" data-i18n="menu.editRules">Rules…</button>
+        <button id="menu-edit-weapons" type="button" data-i18n="menu.editWeapons">Weapons…</button>
       </div>
       <div class="menu-section" style="flex-direction: column; align-items: stretch;">
-        <label style="margin-bottom: 4px;">Spieler</label>
+        <label style="margin-bottom: 4px;" data-i18n="menu.players">Players</label>
         <div id="menu-players"></div>
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button id="menu-load" type="button">Laden…</button>
-        <button id="menu-start" class="btn-primary">Spielen</button>
+        <button id="menu-load" type="button" data-i18n="menu.load">Load…</button>
+        <button id="menu-start" class="btn-primary" data-i18n="menu.start">Play</button>
       </div>
     </div>
   </div>
@@ -543,24 +596,35 @@
       <div id="shop-header">
         <span id="shop-title">Shop</span>
         <span id="shop-cash">$0</span>
-        <button id="shop-close" title="Schließen">×</button>
+        <button id="shop-close" data-i18n-title="common.close" aria-label="Close">×</button>
       </div>
       <div id="shop-list"></div>
       <div id="shop-footer">
-        <button id="shop-done" class="btn-primary">Fertig</button>
+        <button id="shop-done" class="btn-primary" data-i18n="shop.done">Done</button>
       </div>
+    </div>
+  </div>
+
+  <div id="help" class="overlay" hidden>
+    <div id="help-card" class="card">
+      <div class="modal-header">
+        <button id="help-back" class="icon-btn" data-i18n-title="common.back" aria-label="Back">←</button>
+        <h3 data-i18n="helpPage.heading">Help</h3>
+        <button id="help-close" class="modal-x" data-i18n-title="common.close" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="help-body"></div>
     </div>
   </div>
 
   <div id="hud">
     <span id="status">booting…</span>
-    <span><kbd>Maus</kbd> zielen</span>
-    <span><kbd>Klick+Halten</kbd> Power</span>
-    <span><kbd>←/→</kbd> fahren</span>
-    <span><kbd>Q/E</kbd> Waffe</span>
-    <span><kbd>S</kbd> Shop</span>
-    <span><kbd>Esc</kbd> Pause</span>
-    <span><kbd>H</kbd> Hitboxen</span>
+    <span><kbd data-i18n="kbd.mouse">Mouse</kbd> <span data-i18n="help.aim">aim</span></span>
+    <span><kbd data-i18n="kbd.clickHold">Click &amp; hold</kbd> <span data-i18n="help.power">power</span></span>
+    <span><kbd>←/→</kbd> <span data-i18n="help.drive">drive</span></span>
+    <span><kbd>Q/E</kbd> <span data-i18n="help.weapon">weapon</span></span>
+    <span><kbd>S</kbd> <span data-i18n="help.shop">shop</span></span>
+    <span><kbd>Esc</kbd> <span data-i18n="help.pause">pause</span></span>
+    <span><kbd>H</kbd> <span data-i18n="help.hitboxes">hitboxes</span></span>
     <span id="info"></span>
   </div>
   <script type="module" src="./src/main.js"></script>

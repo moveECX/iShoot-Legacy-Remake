@@ -20,8 +20,9 @@ damage and kills, then spend it in the shop on bigger and nastier weapons.
 
 |  |  |
 |---|---|
-| ![Gameplay](docs/screenshots/gameplay.png) | ![Cluster bomb in action](docs/screenshots/action.png) |
-| ![Weapon editor](docs/screenshots/weapon-editor.png) | ![Shop](docs/screenshots/shop.png) |
+| ![Gameplay](docs/screenshots/gameplay.png) | ![In-app help](docs/screenshots/help.png) |
+| ![Weapon editor](docs/screenshots/weapon-editor.png) | ![Settings & languages](docs/screenshots/settings.png) |
+| ![Shop](docs/screenshots/shop.png) | ![Cheat-mode trajectory](docs/screenshots/cheat-trajectory.png) |
 
 ## Features
 
@@ -40,8 +41,13 @@ damage and kills, then spend it in the shop on bigger and nastier weapons.
   ground textures.
 - **Tank personalities** with taunts and one-liners.
 - **Local save/load** slots and a profile/leaderboard board.
-- **Music & sound effects**, with a settings panel for volume, render
-  resolution and full keyboard/mouse rebinding.
+- **Eight UI languages** — English (default), German, French, Italian, Spanish,
+  Russian, Turkish and Portuguese, switchable live in the settings.
+- **In-app help** page and a **cheat mode** (exact shot-trajectory preview +
+  unlimited money).
+- **Full keyboard navigation** and remappable keys.
+- **Music & sound effects**, with a settings panel for volume and render
+  resolution.
 - **CRT / military-terminal themed UI.**
 - **Scalable internal render resolution** (1×–3×) for crisp craters at any size.
 

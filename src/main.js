@@ -17,8 +17,11 @@ import { WeaponEditor } from "./ui/weapon_editor.js";
 import { Profiles } from "./game/profile.js";
 import { saveGame, loadGame, listSaves, deleteSave, SLOT_COUNT } from "./game/save.js";
 import { settings, loadSettings, actionForKey, SettingsUI } from "./ui/settings.js";
+import { Help } from "./ui/help.js";
+import { initLang, applyTranslations, t } from "./i18n/index.js";
 
-loadSettings();   // füllt `settings` aus localStorage, bevor wir renderScale lesen
+loadSettings();   // fills `settings` from localStorage before we read renderScale
+initLang();       // pick saved/default language before any UI renders
 
 // LOGISCHE Welt (Gameplay-Koordinaten) — bleibt immer 480×320, damit alle
 // Physik-/AI-Konstanten unverändert gelten.
@@ -53,6 +56,7 @@ let pause = null;
 let ruleEditor = null;
 let weaponEditor = null;
 let settingsUI = null;
+let help = null;
 const profiles = new Profiles();
 let skyImage = null;
 let paused = false;
@@ -95,10 +99,11 @@ const DEFAULT_INVENTORY = [
 ];
 
 async function init() {
-  statusEl.textContent = "loading…";
+  applyTranslations();                         // translate static markup
+  statusEl.textContent = t("status.loading");
   await Promise.all([assets.loadIndex(), data.load()]);
   await assets.loadImagesByCategory(...REQUIRED_CATEGORIES);
-  statusEl.textContent = "menu";
+  statusEl.textContent = t("status.menu");
 
   // UI-Layer erstellen
   menu = new Menu(data, (cfg) => startNewMatch(cfg));
@@ -116,16 +121,17 @@ async function init() {
     renderScale = settings.renderScale;     // greift beim nächsten Match
     refreshAudioSettings();
   });
+  help = new Help({});
   title = new Title({
     assets,
     onNewGame: () => menu.show(),
     onLoad:    () => openLoadDialog(),
     onSettings: () => settingsUI.open(),
     onShowProfiles: () => showProfilesPanel(),
-    onShowHelp: () => window.open("./assets/manual/index.html", "_blank"),
+    onShowHelp: () => help.open(),
   });
   pause = new Pause({
-    onResume: () => { paused = false; statusEl.textContent = "ready"; },
+    onResume: () => { paused = false; statusEl.textContent = t("status.ready"); },
     onSave:   (slot) => doSave(slot),
     onLoad:   (slot) => doLoad(slot),
     onQuit:   () => returnToTitle(),
@@ -133,6 +139,37 @@ async function init() {
   });
   // "Laden..."-Button im Setup → wie auf Title-Screen
   document.getElementById("menu-load")?.addEventListener("click", () => openLoadDialog());
+  // Icon-Button: zurück zum Titelbildschirm
+  document.getElementById("menu-back")?.addEventListener("click", () => { menu.hide(); title.show(); });
+
+  // ---- Keyboard navigation -------------------------------------------------
+  // Esc closes the top-most open overlay (highest z-index first). Tab/Enter/
+  // Space work natively on the real controls; :focus-visible shows focus.
+  const escClosers = [
+    ["settings",     () => settingsUI.close()],
+    ["help",         () => help.close()],
+    ["weaponeditor", () => weaponEditor.close()],
+    ["ruleeditor",   () => ruleEditor.close()],
+    ["shop",         () => shop?.close()],
+    ["pause",        () => pause.close()],
+    ["menu",         () => { menu.hide(); title.show(); }],
+  ];
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    for (const [id, closeFn] of escClosers) {
+      const el = document.getElementById(id);
+      if (el && !el.hidden) { e.preventDefault(); e.stopPropagation(); closeFn(); return; }
+    }
+  }, true);
+  // Auto-focus the first meaningful control when an overlay opens.
+  for (const ov of document.querySelectorAll(".overlay")) {
+    new MutationObserver(() => {
+      if (ov.hidden) return;
+      const fs = [...ov.querySelectorAll("button:not([disabled]),input:not([disabled]),select,textarea,[href]")];
+      const pref = fs.find((el) => !/(?:-close|-back)$/.test(el.id) && !el.classList.contains("icon-btn")) || fs[0];
+      pref?.focus();
+    }).observe(ov, { attributes: true, attributeFilter: ["hidden"] });
+  }
 
   title.show();
 
@@ -167,7 +204,7 @@ async function init() {
       if (pause?.isOpen && action !== "pause") return;
 
       if (action === "newMap") { e.preventDefault(); openMenu(); }
-      else if (e.code === "Space") { e.preventDefault(); paused = !paused; statusEl.textContent = paused ? "PAUSED" : "ready"; }
+      else if (e.code === "Space") { e.preventDefault(); paused = !paused; statusEl.textContent = paused ? t("status.paused") : t("status.ready"); }
       else if (action === "driveLeft")  driveKeys.left = true;
       else if (action === "driveRight") driveKeys.right = true;
       else if (action === "prevWeapon") {
@@ -184,7 +221,7 @@ async function init() {
         else if (pause?.isOpen) pause.close();
         else if (match && match.state !== "gameover") {
           paused = true;
-          statusEl.textContent = "PAUSED";
+          statusEl.textContent = t("status.paused");
           pause.open();
         }
       }
@@ -232,7 +269,7 @@ function returnToTitle() {
   dirtField.scanHeight.fill(-1);
   dirtField._fullDirty = true;
   title.show();
-  statusEl.textContent = "title";
+  statusEl.textContent = t("status.title");
 }
 
 /** Rule-Editor-Overrides anwenden. Kommt aus rule_editor.js, kann null sein. */
@@ -293,10 +330,10 @@ async function doSave(slot) {
       landscapeName: match.currentLandscapeName,
       skyName: match.currentSkyName,
     });
-    statusEl.textContent = `gespeichert · Slot ${slot + 1}`;
+    statusEl.textContent = t("status.saved", { n: slot + 1 });
   } catch (e) {
     console.error(e);
-    statusEl.textContent = `Save-Fehler: ${e.message}`;
+    statusEl.textContent = t("status.saveError", { msg: e.message });
   }
 }
 
@@ -325,10 +362,10 @@ async function doLoad(slot) {
     paused = false;
     title.hide();
     menu.hide();
-    statusEl.textContent = "ready";
+    statusEl.textContent = t("status.ready");
   } catch (e) {
     console.error(e);
-    statusEl.textContent = `Load-Fehler: ${e.message}`;
+    statusEl.textContent = t("status.loadError", { msg: e.message });
   }
 }
 
@@ -337,9 +374,9 @@ function openLoadDialog() {
   const lines = saves.map((s) =>
     s.savedAt
       ? `${s.slot + 1}: ${s.rulesetName ?? "?"} R${s.round ?? 0}  ${new Date(s.savedAt).toLocaleString()}`
-      : `${s.slot + 1}: (leer)`,
+      : `${s.slot + 1}: ${t("load.empty")}`,
   );
-  const raw = prompt("Slot wählen:\n" + lines.join("\n"), "1");
+  const raw = prompt(t("load.prompt") + "\n" + lines.join("\n"), "1");
   if (!raw) return;
   const slot = parseInt(raw, 10) - 1;
   if (Number.isFinite(slot) && saves[slot]?.savedAt) doLoad(slot);
@@ -347,12 +384,12 @@ function openLoadDialog() {
 
 function showProfilesPanel() {
   const list = profiles.all();
-  if (list.length === 0) { alert("Noch keine Stats — spiel eine Runde."); return; }
+  if (list.length === 0) { alert(t("profiles.none")); return; }
   const lines = list.map((p) => {
     const [name] = p.key.split("|");
     return `${name.padEnd(14)}  ${p.wins}W ${p.kills}K ${p.deaths}D  (${p.matchesPlayed} Matches)`;
   });
-  alert("Bestenliste:\n" + lines.join("\n"));
+  alert(t("profiles.heading") + "\n" + lines.join("\n"));
 }
 
 function startBackgroundMusic() {
@@ -485,6 +522,7 @@ function startNewMatch(cfg) {
           if (rules.weapons[w.key]) t.weapons.push({ ...w });
         }
         t.cash = rules.startingCash ?? 0;
+        if (settings.cheat && p.controller === 0) t.cash = 9_999_999;  // cheat: unlimited money
         t.cashAtTurnStart = t.cash;
         t.shotQuotes  = p.shotQuotes  ?? [];
         t.killQuotes  = p.killQuotes  ?? [];
@@ -505,15 +543,15 @@ function startNewMatch(cfg) {
       hud = new Hud(match, assets);
       shop = new Shop(match);
       pause.bindMatch(match);
-      statusEl.textContent = "ready";
+      statusEl.textContent = t("status.ready");
     })
     .catch((e) => {
       console.error(e);
-      statusEl.textContent = `error: ${e.message}`;
+      statusEl.textContent = t("status.error", { msg: e.message });
     });
 }
 
 init().catch((e) => {
   console.error(e);
-  statusEl.textContent = `error: ${e.message}`;
+  statusEl.textContent = t("status.error", { msg: e.message });
 });

@@ -1,22 +1,17 @@
-// Setup-Menü vor Match-Start.
-// Pro Spielerslot: Controller (Mensch/CPU + Difficulty) + Persönlichkeit
-// (10 vordefinierte Persönlichkeiten oder "Custom"-Slot mit Name/Style/Farbe).
+// Setup menu before a match.
+// Per player slot: controller (human/CPU + difficulty) + personality
+// (10 predefined personalities or a "Custom" slot with name/style/colour).
 
-const CONTROLLER_LABELS = {
-  off: "Aus",
-  human: "Mensch",
-  "ai-easy": "CPU Easy",
-  "ai-medium": "CPU Medium",
-  "ai-hard": "CPU Hard",
+import { t, onLangChange } from "../i18n/index.js";
+
+const CONTROLLERS = ["off", "human", "ai-easy", "ai-medium", "ai-hard"];
+const CONTROLLER_I18N = {
+  off: "controller.off", human: "controller.human",
+  "ai-easy": "controller.aiEasy", "ai-medium": "controller.aiMedium", "ai-hard": "controller.aiHard",
 };
-
-/** Hover-Erklärung pro Controller — was sich konkret an der KI ändert. */
-const CONTROLLER_TOOLTIPS = {
-  off: "Dieser Slot bleibt leer.",
-  human: "Von dir gesteuert: Maus zielt, Halten lädt Power, Loslassen feuert.",
-  "ai-easy": "CPU Easy — wählt das Ziel zufällig, große Ziel-Streuung (~54 px), grobe Power-Auflösung (9 Winkel, 8er-Schritte). Fährt selten optimal.",
-  "ai-medium": "CPU Medium — zielt auf den nächsten Gegner, mittlere Streuung (~36 px), 13 Probe-Winkel in 5er-Power-Schritten. Fährt bei schlechtem Schusswinkel näher ran.",
-  "ai-hard": "CPU Hard — nächster Gegner, minimale Streuung (~18 px), 17 Probe-Winkel in feinen 3er-Power-Schritten. Nutzt aktiv Fuel, um in Schussposition zu fahren.",
+const CONTROLLER_TIP_I18N = {
+  off: "controller.tip.off", human: "controller.tip.human",
+  "ai-easy": "controller.tip.aiEasy", "ai-medium": "controller.tip.aiMedium", "ai-hard": "controller.tip.aiHard",
 };
 
 const CONTROLLER_INDEX = {
@@ -29,7 +24,6 @@ const STYLES = [
   { id: 2, label: "Panzer" },
 ];
 
-const DEFAULT_PLAYER_NAMES = ["Spieler 1", "Spieler 2", "Spieler 3", "Spieler 4"];
 const DEFAULT_COLORS = [
   { r: 0.40, g: 0.70, b: 1.00 },
   { r: 1.00, g: 0.50, b: 0.40 },
@@ -54,6 +48,7 @@ export class Menu {
     this.editWeaponsBtn = document.getElementById("menu-edit-weapons");
     this._ruleOverrides = null;
     this._populate();
+    onLangChange(() => this._populate());
     this.startBtn.addEventListener("click", () => this._submit());
     this.editRulesBtn?.addEventListener("click", () => this._editorHook?.());
     this.editWeaponsBtn?.addEventListener("click", () => this._weaponEditorHook?.());
@@ -90,14 +85,14 @@ export class Menu {
       row.innerHTML = `
         <span class="menu-slot">P${i + 1}</span>
         <input type="text" class="menu-name" maxlength="14" value="${escapeHtml(d.name)}">
-        <select class="menu-controller" title="${escapeHtml(CONTROLLER_TOOLTIPS[d.controller] || "")}">
-          ${Object.entries(CONTROLLER_LABELS)
-            .map(([v, l]) => `<option value="${v}"${v === d.controller ? " selected" : ""} title="${escapeHtml(CONTROLLER_TOOLTIPS[v] || "")}">${l}</option>`)
+        <select class="menu-controller" title="${escapeHtml(t(CONTROLLER_TIP_I18N[d.controller]))}">
+          ${CONTROLLERS
+            .map((v) => `<option value="${v}"${v === d.controller ? " selected" : ""} title="${escapeHtml(t(CONTROLLER_TIP_I18N[v]))}">${escapeHtml(t(CONTROLLER_I18N[v]))}</option>`)
             .join("")}
         </select>
-        <select class="menu-personality" title="Persönlichkeit">
+        <select class="menu-personality" title="${escapeHtml(t("menu.personalityTitle"))}">
           ${personalityNames
-            .map((n) => `<option value="${escapeHtml(n)}"${n === d.personality ? " selected" : ""}>${n || "— Custom —"}</option>`)
+            .map((n) => `<option value="${escapeHtml(n)}"${n === d.personality ? " selected" : ""}>${n ? escapeHtml(n) : escapeHtml(t("menu.customPersonality"))}</option>`)
             .join("")}
         </select>
         <select class="menu-style">
@@ -133,7 +128,7 @@ export class Menu {
       // Controller-Tooltip live aktualisieren
       const ctrlSel = row.querySelector(".menu-controller");
       ctrlSel.addEventListener("change", () => {
-        ctrlSel.title = CONTROLLER_TOOLTIPS[ctrlSel.value] || "";
+        ctrlSel.title = t(CONTROLLER_TIP_I18N[ctrlSel.value]);
       });
     }
   }
@@ -143,7 +138,7 @@ export class Menu {
     const personalities = [...this.data.tanks];
     const shuffled = personalities.sort(() => Math.random() - 0.5);
     return [
-      { name: DEFAULT_PLAYER_NAMES[0], controller: "human", personality: "", style: 0, color: DEFAULT_COLORS[0] },
+      { name: t("player.default", { n: 1 }), controller: "human", personality: "", style: 0, color: DEFAULT_COLORS[0] },
       { name: shuffled[0]?.name ?? "Robotank", controller: "ai-medium", personality: shuffled[0]?.name ?? "", style: 0, color: DEFAULT_COLORS[1] },
       { name: "—", controller: "off", personality: "", style: 1, color: DEFAULT_COLORS[2] },
       { name: "—", controller: "off", personality: "", style: 2, color: DEFAULT_COLORS[3] },
@@ -166,7 +161,7 @@ export class Menu {
            "nuke", "planetBuster", "megaRoller", "greatWall"]
         : null;
       players.push({
-        name: row.querySelector(".menu-name").value.trim() || `Spieler ${i + 1}`,
+        name: row.querySelector(".menu-name").value.trim() || t("player.default", { n: i + 1 }),
         controller: CONTROLLER_INDEX[ctrlVal],
         style: +row.querySelector(".menu-style").value,
         color: hexToRgb(row.querySelector(".menu-color").value),
@@ -177,7 +172,7 @@ export class Menu {
       });
     }
     if (players.length < 2) {
-      alert("Mindestens 2 aktive Spieler nötig.");
+      alert(t("menu.need2players"));
       return;
     }
     this.hide();

@@ -1,6 +1,8 @@
 // Pause-Menü während des Matches. Wird per Esc oder Pause-Knopf geöffnet.
 // Buttons: Resume, Save, Load, Quit-to-Title.
 
+import { t, onLangChange } from "../i18n/index.js";
+
 export class Pause {
   /**
    * @param {object} hooks
@@ -21,6 +23,7 @@ export class Pause {
       this.close();
       hooks.onQuit?.();
     });
+    onLangChange(() => { if (this.isOpen) this._renderSaveList(); });
   }
 
   bindMatch(match) { this._match = match; }
@@ -49,12 +52,12 @@ export class Pause {
       row.className = "pause-saverow";
       const label = slot.savedAt
         ? `${slot.rulesetName ?? "?"} · R${slot.round ?? 0} · ${new Date(slot.savedAt).toLocaleString()}`
-        : "— leer —";
+        : t("common.empty");
       row.innerHTML = `
-        <span class="pause-slot">Slot ${slot.slot + 1}</span>
+        <span class="pause-slot">${escapeHtml(t("pause.slot", { n: slot.slot + 1 }))}</span>
         <span class="pause-slotlabel">${escapeHtml(label)}</span>
-        <button data-act="save">Speichern</button>
-        <button data-act="load" ${slot.savedAt ? "" : "disabled"}>Laden</button>
+        <button data-act="save">${escapeHtml(t("pause.save"))}</button>
+        <button data-act="load" ${slot.savedAt ? "" : "disabled"}>${escapeHtml(t("pause.load"))}</button>
       `;
       row.querySelector('[data-act="save"]').addEventListener("click", async () => {
         await this.hooks.onSave?.(slot.slot);
