@@ -93,6 +93,7 @@ export default {
     "rule.dirtClods": "Частицы земли",
     "rule.steepDriving": "Езда по крутым склонам",
     "rule.fastForward": "Ускорение хода ИИ",
+    "rule.fastForwardSpeed": "Скорость ускорения",
     "weaponEditor.heading": "Редактор оружия",
     "weaponEditor.newWeapon": "+ Новое оружие",
     "weaponEditor.delete": "Удалить",

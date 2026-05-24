@@ -93,6 +93,7 @@ export default {
     "rule.dirtClods": "Particules de terre",
     "rule.steepDriving": "Pentes raides franchissables",
     "rule.fastForward": "Accéléré pour l'IA",
+    "rule.fastForwardSpeed": "Vitesse de l'accéléré",
     "weaponEditor.heading": "Éditeur d'armes",
     "weaponEditor.newWeapon": "+ Nouvelle arme",
     "weaponEditor.delete": "Supprimer",

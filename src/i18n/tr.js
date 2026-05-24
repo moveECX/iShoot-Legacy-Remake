@@ -108,6 +108,7 @@ export default {
     "rule.dirtClods": "Toprak parçacıkları",
     "rule.steepDriving": "Dik yamaçlar sürülebilir",
     "rule.fastForward": "CPU'da hızlı ileri",
+    "rule.fastForwardSpeed": "Hızlı ileri hızı",
 
     // ---- weapon editor ----
     "weaponEditor.heading": "Silah Düzenleyici",

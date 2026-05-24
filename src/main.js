@@ -459,8 +459,11 @@ function tick() {
     const cur = match.currentTank();
     const ffState = match.state === "firing" || match.state === "animating";
     const ffOk = cur && cur.controller > 0 && ffState && !match.anyQuoteActive();
+    // Speed = total ticks per frame during FF; "extra" are the additional ticks
+    // beyond the normal one. Configurable via the fastForwardSpeed rule.
+    const extra = Math.max(0, (match.rules.fastForwardSpeed ?? 3) - 1);
     if (ffOk) {
-      for (let i = 0; i < 2
+      for (let i = 0; i < extra
         && (match.state === "firing" || match.state === "animating")
         && !match.anyQuoteActive(); i++) {
         match.tick();

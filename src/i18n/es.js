@@ -108,6 +108,7 @@ export default {
     "rule.dirtClods": "Partículas de tierra",
     "rule.steepDriving": "Pendientes empinadas transitables",
     "rule.fastForward": "Avance rápido con la CPU",
+    "rule.fastForwardSpeed": "Velocidad de avance rápido",
 
     // ---- weapon editor ----
     "weaponEditor.heading": "Editor de armas",

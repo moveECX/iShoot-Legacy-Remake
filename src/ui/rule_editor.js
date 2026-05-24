@@ -22,6 +22,7 @@ const FIELDS = [
   { key: "dirtClods",               label: "Erd-Partikel",              type: "bool" },
   { key: "steepDriving",            label: "Steile Hänge fahrbar",      type: "bool" },
   { key: "fastForward",             label: "Fast-Forward bei CPU",      type: "bool" },
+  { key: "fastForwardSpeed",        label: "Fast-Forward Speed",        min: 1, max: 8, step: 1, type: "int" },
 ];
 
 export class RuleEditor {

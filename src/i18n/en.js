@@ -109,6 +109,7 @@ export default {
     "rule.dirtClods": "Dirt particles",
     "rule.steepDriving": "Steep slopes drivable",
     "rule.fastForward": "Fast-forward on CPU",
+    "rule.fastForwardSpeed": "Fast-forward speed",
 
     // ---- weapon editor ----
     "weaponEditor.heading": "Weapon Editor",

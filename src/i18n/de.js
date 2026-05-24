@@ -93,6 +93,7 @@ export default {
     "rule.dirtClods": "Erdpartikel",
     "rule.steepDriving": "Steile Hänge befahrbar",
     "rule.fastForward": "Schnellvorlauf bei CPU",
+    "rule.fastForwardSpeed": "Schnellvorlauf-Tempo",
     "weaponEditor.heading": "Waffeneditor",
     "weaponEditor.newWeapon": "+ Neue Waffe",
     "weaponEditor.delete": "Löschen",
