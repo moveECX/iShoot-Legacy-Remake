@@ -58,6 +58,8 @@ export default {
     "settings.sound": "Sound effects",
     "settings.music": "Music",
     "settings.musicVolume": "Music volume",
+    "settings.explosions": "Explosions",
+    "settings.otherSounds": "Other sounds",
     "settings.cheatMode": "Cheat mode",
     "settings.cheatHint": "Draws the exact shot trajectory (accounting for wind and angle) and gives you unlimited money.",
     "settings.keybindings": "Key bindings",

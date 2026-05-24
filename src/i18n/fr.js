@@ -47,6 +47,8 @@ export default {
     "settings.renderHint": "Plus élevé = plus net, avec des cratères plus lisses. S'applique au prochain démarrage de partie.",
     "settings.sound": "Effets sonores",
     "settings.music": "Musique",
+    "settings.explosions": "Explosions",
+    "settings.otherSounds": "Autres sons",
     "settings.musicVolume": "Volume de la musique",
     "settings.cheatMode": "Mode triche",
     "settings.cheatHint": "Trace la trajectoire exacte du tir (en tenant compte du vent et de l'angle) et vous donne de l'argent illimité.",

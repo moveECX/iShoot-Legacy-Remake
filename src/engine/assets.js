@@ -80,6 +80,10 @@ export class Assets {
     return this._audioCtx;
   }
 
+  /** Public access to the (lazily created) Web Audio context — shared by the
+   *  SFX player and the procedural drive/tread sound. */
+  getAudioContext() { return this._ensureAudioCtx(); }
+
   async loadAudio(name) {
     if (this.audio.has(name)) return this.audio.get(name);
     const ctx = this._ensureAudioCtx();

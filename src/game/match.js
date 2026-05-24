@@ -108,6 +108,10 @@ export class Match {
   currentTank() { return this.tanks[this.currentPlayerIndex] ?? null; }
   aliveTanks() { return this.tanks.filter(t => !t.isDead()); }
 
+  /** True solange eine Sprechblase sichtbar ist — damit der Fast-Forward
+   *  pausiert und CPU-Sprüche lesbar bleiben. */
+  anyQuoteActive() { return this.effects.some((e) => e instanceof Quote); }
+
   /** Sucht den nächsten lebenden Spieler im Kreis. Setzt state="gameover",
    *  wenn keiner mehr lebt. Verändert NICHT this.round — die Match-Runde
    *  zählt nur beginNewRound hoch (Turn-Cycle ≠ Match-Runde!). */

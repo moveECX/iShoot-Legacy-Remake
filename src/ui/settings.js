@@ -18,9 +18,9 @@ export const DEFAULT_KEYS = {
 /** Global settings object — read directly by main.js. */
 export const settings = {
   renderScale: 2,
-  soundOn: true,
-  musicOn: true,
   musicVolume: 0.25,
+  explosionVolume: 0.8,
+  sfxVolume: 0.7,
   cheat: false,
   keys: { ...DEFAULT_KEYS },
 };
@@ -31,9 +31,9 @@ export function loadSettings() {
     if (raw) {
       const s = JSON.parse(raw);
       if ([1, 2, 3].includes(s.renderScale)) settings.renderScale = s.renderScale;
-      if (typeof s.soundOn === "boolean") settings.soundOn = s.soundOn;
-      if (typeof s.musicOn === "boolean") settings.musicOn = s.musicOn;
       if (typeof s.musicVolume === "number") settings.musicVolume = s.musicVolume;
+      if (typeof s.explosionVolume === "number") settings.explosionVolume = s.explosionVolume;
+      if (typeof s.sfxVolume === "number") settings.sfxVolume = s.sfxVolume;
       if (typeof s.cheat === "boolean") settings.cheat = s.cheat;
       settings.keys = { ...DEFAULT_KEYS, ...(s.keys || {}) };
     }
@@ -64,9 +64,9 @@ export class SettingsUI {
     this.onApply = onApply;
     this.el = document.getElementById("settings");
     this.scaleSel = document.getElementById("settings-scale");
-    this.soundCb = document.getElementById("settings-sound");
-    this.musicCb = document.getElementById("settings-music");
-    this.volSlider = document.getElementById("settings-volume");
+    this.musicVol = document.getElementById("settings-vol-music");
+    this.explVol = document.getElementById("settings-vol-expl");
+    this.sfxVol = document.getElementById("settings-vol-sfx");
     this.keyList = document.getElementById("settings-keys");
     this.langSel = document.getElementById("settings-language");
     this.cheatCb = document.getElementById("settings-cheat");
@@ -103,9 +103,9 @@ export class SettingsUI {
 
   open() {
     this.scaleSel.value = String(settings.renderScale);
-    this.soundCb.checked = settings.soundOn;
-    this.musicCb.checked = settings.musicOn;
-    this.volSlider.value = String(Math.round(settings.musicVolume * 100));
+    if (this.musicVol) this.musicVol.value = String(Math.round(settings.musicVolume * 100));
+    if (this.explVol)  this.explVol.value  = String(Math.round(settings.explosionVolume * 100));
+    if (this.sfxVol)   this.sfxVol.value   = String(Math.round(settings.sfxVolume * 100));
     if (this.langSel) this.langSel.value = getLang();
     if (this.cheatCb) this.cheatCb.checked = settings.cheat;
     this._renderKeys();
@@ -136,9 +136,10 @@ export class SettingsUI {
 
   _apply() {
     settings.renderScale = parseInt(this.scaleSel.value, 10) || 2;
-    settings.soundOn = this.soundCb.checked;
-    settings.musicOn = this.musicCb.checked;
-    settings.musicVolume = Math.max(0, Math.min(1, (+this.volSlider.value || 0) / 100));
+    const pct = (el, def) => el ? Math.max(0, Math.min(1, (+el.value || 0) / 100)) : def;
+    settings.musicVolume = pct(this.musicVol, settings.musicVolume);
+    settings.explosionVolume = pct(this.explVol, settings.explosionVolume);
+    settings.sfxVolume = pct(this.sfxVol, settings.sfxVolume);
     if (this.cheatCb) settings.cheat = this.cheatCb.checked;
     persist();
     this.onApply?.(settings);

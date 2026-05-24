@@ -8,7 +8,6 @@
 import { POWER_SCALE, GRAVITY_FACTOR, WIND_FACTOR } from "./weapon.js";
 
 const THINK_DELAY_TICKS = 24;     // ~0.8 s sichtbares "Nachdenken"
-const DRIVE_TICKS_PER_TURN = 30;  // Maximum-Fahrleistung pro Turn
 
 // Schuss-Fehler je Schwierigkeit: NACHDEM die ideale Lösung gefunden wurde,
 // wird Winkel/Power verrauscht. Das bestimmt die echte Trefferquote — Easy
@@ -40,7 +39,7 @@ export class AI {
 
     if (tank !== this._lastTank) {
       this._thinking = 0;
-      this._driveBudget = DRIVE_TICKS_PER_TURN;
+      this._driveBudget = this._driveAllowance(tank);
       this._lastTank = tank;
       // Einmal pro Turn: evtl. bessere Waffen kaufen + Waffe festlegen.
       this._maybeBuyWeapons(tank);
@@ -55,8 +54,11 @@ export class AI {
     // Ggf. erst fahren, wenn keine gute Lösung von hier
     if (this._driveBudget > 0 && tank.fuel > 0) {
       const probe = this._findSolution(tank, target);
-      // Wenn Treffer schon gut (< target.width/2), nicht mehr fahren
-      const wantDrive = probe.dist > target.width() * 0.5;
+      // Fahr-Bereitschaft je Schwierigkeit: Easy fährt nur bei sehr schlechter
+      // Lösung, Hard repositioniert schon bei kleinen Abweichungen.
+      const diff = tank.controller;
+      const driveThresh = diff === 1 ? 1.2 : diff === 2 ? 0.7 : 0.45;
+      const wantDrive = probe.dist > target.width() * driveThresh;
       if (wantDrive) {
         const dir = target.x < tank.x ? -1 : +1;
         if (tank.drive(dir, m.dirtField, m.tanks, m.rules)) {
@@ -81,6 +83,16 @@ export class AI {
   }
 
   // -------------------------------------------------------------------------
+
+  /** Fahr-Budget (Bewegungen) pro Turn: steigt mit der Schwierigkeit und mit
+   *  starkem Wind — bei viel Wind lohnt sich Repositionieren mehr. */
+  _driveAllowance(tank) {
+    const diff = tank.controller;
+    const base = diff === 1 ? 6 : diff === 2 ? 16 : 28;
+    const maxWind = this.match.rules.maxWind || 0;
+    const windFrac = maxWind > 0 ? Math.min(1, Math.abs(this.match.wind) / maxWind) : 0;
+    return Math.round(base * (1 + windFrac * 0.8));   // bis zu +80 % bei Maximalwind
+  }
 
   _selectTarget(tank) {
     const enemies = this.match.tanks.filter((t) => t !== tank && !t.isDead());

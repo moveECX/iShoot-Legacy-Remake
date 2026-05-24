@@ -184,7 +184,7 @@ export class ShellWeapon {
     // Original: currentRadius startet bei blastRadius/2 → halber Krater
     // sofort beim Aufprall, wächst dann hoch.
     this.currentRadius = this.blastRadius * 0.5;
-    if (this.explosionSoundName) match.playSfx?.(this.explosionSoundName);
+    if (this.explosionSoundName) match.playSfx?.(this.explosionSoundName, "explosion");
     // Schaden + Effekte sofort beim Aufprall (responsiv, Hand-in-Hand mit
     // dem ersten Krater). Das Graben selbst läuft progressiv in advance().
     this._detonate(match);
@@ -633,7 +633,7 @@ class SkylanceWeapon extends ShellWeapon {
     if (this.exploding) return;
     this.exploding = true;
     this.finished = true;        // Effekt sofort, keine Wachstumsanimation
-    if (this.explosionSoundName) match.playSfx?.(this.explosionSoundName);
+    if (this.explosionSoundName) match.playSfx?.(this.explosionSoundName, "explosion");
 
     if (this.createDirt) {
       // Great Wall: errichtet eine vertikale Säule (baut Terrain auf).

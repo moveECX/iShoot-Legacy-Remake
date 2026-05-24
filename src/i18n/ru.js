@@ -47,6 +47,8 @@ export default {
     "settings.renderHint": "Выше = чётче, с более плавными воронками. Применяется при следующем запуске игры.",
     "settings.sound": "Звуковые эффекты",
     "settings.music": "Музыка",
+    "settings.explosions": "Взрывы",
+    "settings.otherSounds": "Прочие звуки",
     "settings.musicVolume": "Громкость музыки",
     "settings.cheatMode": "Режим читов",
     "settings.cheatHint": "Рисует точную траекторию выстрела (с учётом ветра и угла) и даёт неограниченные деньги.",

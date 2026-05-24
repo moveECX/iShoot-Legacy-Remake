@@ -47,6 +47,8 @@ export default {
     "settings.renderHint": "Mais alta = mais nítida, com crateras mais suaves. Aplica-se no próximo início de jogo.",
     "settings.sound": "Efeitos sonoros",
     "settings.music": "Música",
+    "settings.explosions": "Explosões",
+    "settings.otherSounds": "Outros sons",
     "settings.musicVolume": "Volume da música",
     "settings.cheatMode": "Modo de batota",
     "settings.cheatHint": "Desenha a trajetória exata do tiro (tendo em conta o vento e o ângulo) e dá-te dinheiro ilimitado.",

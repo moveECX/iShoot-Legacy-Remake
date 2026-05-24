@@ -47,6 +47,8 @@ export default {
     "settings.renderHint": "Höher = schärfer, mit glatteren Kratern. Wird beim nächsten Spielstart wirksam.",
     "settings.sound": "Soundeffekte",
     "settings.music": "Musik",
+    "settings.explosions": "Explosionen",
+    "settings.otherSounds": "Sonstige Geräusche",
     "settings.musicVolume": "Musiklautstärke",
     "settings.cheatMode": "Cheat-Modus",
     "settings.cheatHint": "Zeichnet die exakte Schussbahn (unter Berücksichtigung von Wind und Winkel) und gibt dir unbegrenzt Geld.",

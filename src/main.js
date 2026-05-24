@@ -4,6 +4,7 @@ import { Assets } from "./engine/assets.js";
 import { GameData } from "./game/data.js";
 import { createLoop } from "./engine/loop.js";
 import { bindInput } from "./engine/input.js";
+import { TreadSound } from "./engine/drivesound.js";
 import { DirtField } from "./game/terrain.js";
 import { Tank } from "./game/tank.js";
 import { Match } from "./game/match.js";
@@ -87,6 +88,7 @@ const PRELOAD_SFX = [
 ];
 
 let bgMusic = null;
+let treadSound = null;
 
 const DEFAULT_INVENTORY = [
   { key: "miniMortar",      count: -1 },
@@ -172,6 +174,18 @@ async function init() {
   }
 
   title.show();
+
+  // Start music on the first user gesture (browsers block autoplay before one)
+  // so it already plays on the title screen — not only once a match begins.
+  const startAudioOnce = () => {
+    try { assets.getAudioContext().resume(); } catch {}
+    startBackgroundMusic();
+    refreshAudioSettings();
+    window.removeEventListener("pointerdown", startAudioOnce);
+    window.removeEventListener("keydown", startAudioOnce);
+  };
+  window.addEventListener("pointerdown", startAudioOnce);
+  window.addEventListener("keydown", startAudioOnce);
 
   bindInput(canvas, {
     onPointerDown: (e) => {
@@ -353,7 +367,10 @@ async function doLoad(slot) {
     }
     for (const t of m.tanks) t.setSprites(assets);
     match = m;
-    match.playSfx = (name) => { if (settings.soundOn) assets.playSfx(name); };
+    match.playSfx = (name, kind = "sfx") => {
+      const v = kind === "explosion" ? settings.explosionVolume : settings.sfxVolume;
+      if (v > 0) assets.playSfx(name, { volume: v });
+    };
     match.onMatchOver = () => onMatchOver(match);
     match.onRoundOver = () => onRoundOver(match);
     hud = new Hud(match, assets);
@@ -399,8 +416,8 @@ function startBackgroundMusic() {
     const audio = new Audio(assets.pathOf(`Music${idx}.mp3`));
     audio.loop = true;
     audio.volume = settings.musicVolume;
-    audio.muted = !settings.musicOn;
-    if (settings.musicOn) audio.play().catch(() => {});
+    audio.muted = settings.musicVolume <= 0;
+    if (settings.musicVolume > 0) audio.play().catch(() => {});
     bgMusic = audio;
   } catch {
     /* Pfad evtl. nicht gemappt — Musik ist optional */
@@ -411,38 +428,52 @@ function startBackgroundMusic() {
 function refreshAudioSettings() {
   if (bgMusic) {
     bgMusic.volume = settings.musicVolume;
-    bgMusic.muted = !settings.musicOn;
-    if (settings.musicOn && bgMusic.paused) bgMusic.play().catch(() => {});
-    if (!settings.musicOn && !bgMusic.paused) bgMusic.pause();
+    bgMusic.muted = settings.musicVolume <= 0;
+    if (settings.musicVolume > 0 && bgMusic.paused) bgMusic.play().catch(() => {});
+    if (settings.musicVolume <= 0 && !bgMusic.paused) bgMusic.pause();
   }
 }
 
 function tick() {
-  if (paused || !match || !hud) return;
+  if (paused || !match || !hud) {
+    treadSound?.setActive(false, settings.sfxVolume);
+    return;
+  }
+  const curT = match.currentTank();
+  const xBefore = curT ? curT.x : null;
   if (match.isAcceptingInput() && !hud.charging) {
-    const t = match.currentTank();
-    if (t?.controller === 0) {
-      if (driveKeys.left)  t.drive(-1, dirtField, match.tanks, match.rules);
-      if (driveKeys.right) t.drive(+1, dirtField, match.tanks, match.rules);
+    if (curT?.controller === 0) {
+      if (driveKeys.left)  curT.drive(-1, dirtField, match.tanks, match.rules);
+      if (driveKeys.right) curT.drive(+1, dirtField, match.tanks, match.rules);
     }
   }
   hud.tick();
   match.tick();
 
-  // FastForward NUR während der CPU am Zug ist — entscheidend ist der
-  // aktuelle Spieler, nicht weapon.source (die Death-Explosion eines
-  // CPU-Opfers hätte sonst bei einem Menschen-Schuss FF getriggert →
-  // "alles nach der Explosion im Zeitraffer"-Bug).
+  // FastForward NUR während der CPU am Zug ist, und nur während Geschoss-Flug
+  // und Terrain-Setzen (state "firing"/"animating") — NICHT während des Zielens
+  // und NICHT solange eine Sprechblase sichtbar ist. So bleiben die CPU-Sprüche
+  // lesbar und der Zug wirkt nicht "vorgespult". Entscheidend ist der aktuelle
+  // Spieler (nicht weapon.source — sonst Zeitraffer-Bug nach Death-Explosion).
   if (match.rules.fastForward) {
     const cur = match.currentTank();
-    const cpuTurn = cur && cur.controller > 0
-      && match.state !== "gameover" && match.state !== "roundover";
-    if (cpuTurn) {
-      for (let i = 0; i < 3 && match.state !== "gameover" && match.state !== "roundover"; i++) {
+    const ffState = match.state === "firing" || match.state === "animating";
+    const ffOk = cur && cur.controller > 0 && ffState && !match.anyQuoteActive();
+    if (ffOk) {
+      for (let i = 0; i < 2
+        && (match.state === "firing" || match.state === "animating")
+        && !match.anyQuoteActive(); i++) {
         match.tick();
       }
     }
   }
+
+  // Tank-tread sound while a tank actually moves (human keys or CPU driving).
+  const curNow = match.currentTank();
+  const driving = !!(curNow && curNow === curT && xBefore !== null
+    && !curNow.isDead() && curNow.x !== xBefore);
+  if (driving && !treadSound) treadSound = new TreadSound(assets.getAudioContext());
+  treadSound?.setActive(driving, settings.sfxVolume);
 }
 
 function render() {
@@ -535,7 +566,10 @@ function startNewMatch(cfg) {
         width: W, height: H,
         rounds: cfg.rounds ?? 3,
       });
-      match.playSfx = (name) => { if (settings.soundOn) assets.playSfx(name); };
+      match.playSfx = (name, kind = "sfx") => {
+      const v = kind === "explosion" ? settings.explosionVolume : settings.sfxVolume;
+      if (v > 0) assets.playSfx(name, { volume: v });
+    };
       match.onMatchOver = () => onMatchOver(match);
       match.onRoundOver = () => onRoundOver(match);
       match.currentLandscapeName = pick.landscape;

@@ -56,6 +56,8 @@ export default {
     "settings.renderHint": "Yüksek = daha keskin, daha pürüzsüz kraterler. Bir sonraki oyun başlangıcında uygulanır.",
     "settings.sound": "Ses efektleri",
     "settings.music": "Müzik",
+    "settings.explosions": "Patlamalar",
+    "settings.otherSounds": "Diğer sesler",
     "settings.musicVolume": "Müzik düzeyi",
     "settings.cheatMode": "Hile modu",
     "settings.cheatHint": "Tam atış yörüngesini çizer (rüzgâr ve açıyı hesaba katarak) ve size sınırsız para verir.",
