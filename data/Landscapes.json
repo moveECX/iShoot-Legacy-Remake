@@ -1,0 +1,96 @@
+{
+  "Skies": [
+    [
+      "Clouds2.png",
+      "Clouds3.png",
+      "Puffy Cumulus.png",
+      "Clouds4.png",
+      "Clouds5.png",
+      "Clouds6.png"
+    ],
+    [
+      "Dark_Sky.png",
+      "Clouds7.png"
+    ],
+    [
+      "Vivid Blue 1.png",
+      "Vivid Blue 2.png"
+    ],
+    [
+      "Sunset1.png",
+      "Sunset2.png",
+      "Sunset3.png",
+      "Sunset4.png"
+    ]
+  ],
+  "Landscapes": {
+    "Banff 2.png": [
+      0,
+      1
+    ],
+    "Anderson Glacier.png": [
+      0,
+      1
+    ],
+    "Monument Valley 2.png": [
+      0,
+      3
+    ],
+    "Monument Valley.png": [
+      0,
+      3
+    ],
+    "Mountains of Ladakh.png": [
+      3,
+      0,
+      1
+    ],
+    "Vivid Green Hills 1.png": [
+      0,
+      2,
+      3
+    ],
+    "GizaPyramids.png": [
+      0,
+      3
+    ],
+    "Glacier Towers.png": [
+      0
+    ],
+    "Glacier.png": [
+      0,
+      1
+    ],
+    "Glacier 2.png": [
+      0,
+      1
+    ],
+    "Snowy Mountains.png": [
+      0,
+      1
+    ],
+    "Giant's Causeway.png": [
+      0,
+      1,
+      "3"
+    ],
+    "Ten Mile Range.png": [
+      0,
+      1
+    ],
+    "Mount Fuji.png": [
+      0,
+      1
+    ],
+    "Banff 1.png": [
+      0,
+      1,
+      3
+    ],
+    "Vivid Green Hills 2.png": [
+      0,
+      2,
+      3
+    ]
+  }
+}

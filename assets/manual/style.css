@@ -1,0 +1,10 @@
+body, td {
+    background-color: black;
+    color: white;
+    font: 12pt Helvetica;
+}
+
+h1 {
+	font-size: 16pt;
+	text-decoration: underline;
+}

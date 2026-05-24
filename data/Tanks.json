@@ -1,0 +1,227 @@
+[
+  {
+    "green": 0.7,
+    "style": 2,
+    "deathPhrases": [
+      "I almost got away with it...",
+      "You'll pay for that!",
+      "How did you know it was me?"
+    ],
+    "blue": 0,
+    "red": 0.7,
+    "shotPhrases": [
+      "I've no patience for you.",
+      "Better men than you have tried to stop me!",
+      "You'll never take me alive!"
+    ],
+    "name": "Colonel Mustard",
+    "killPhrases": [
+      "It was Colonel Mustard with the %w!",
+      "More effective than a candlestick, wouldn't you agree?",
+      "This time I'll get away with it!"
+    ]
+  },
+  {
+    "green": 0.5,
+    "style": 1,
+    "deathPhrases": [
+      "Dead ant, dead ant, dead ant dead ant dead ant dead annnnt....",
+      "Good one."
+    ],
+    "blue": 1,
+    "red": 1,
+    "shotPhrases": [
+      "My surprises, they are rarely unexpected.",
+      "Ready or not, here I come..."
+    ],
+    "name": "Pink Panzer",
+    "killPhrases": [
+      "He is not 'pushing up the daisies,' he is DEAD!",
+      "Ah ha!",
+      "Got you!"
+    ]
+  },
+  {
+    "green": 0.7,
+    "style": 0,
+    "deathPhrases": [
+      "Abort, retry, fail?",
+      "System shutdown imminent.",
+      "The system has performed an illegal operation and will be shut down."
+    ],
+    "blue": 0.7,
+    "red": 0.7,
+    "shotPhrases": [
+      "Protect the innocent.",
+      "Serve the public trust.",
+      "Protect the innocent.",
+      "Come quietly or there will be trouble."
+    ],
+    "name": "Robotank",
+    "killPhrases": [
+      "Dead or alive, you're coming with me.",
+      "You have suffered an emotional shock.  I will notify a crisis center.",
+      "You have the right to remain silent."
+    ]
+  },
+  {
+    "green": 1,
+    "style": 2,
+    "deathPhrases": [
+      "Where did that come from?",
+      "I wasn't paying attention....",
+      "Ouch!",
+      "Who did that?"
+    ],
+    "blue": 0.7,
+    "red": 0.7,
+    "shotPhrases": [
+      "Oops!",
+      "What happens when I do this?",
+      "And where it lands, nobody knows!",
+      "So THAT's what that button does!",
+      "Wait, what did I just fire?",
+      "That's not what I meant to do!"
+    ],
+    "name": "Spazbot",
+    "killPhrases": [
+      "How did that happen?",
+      "Wow!",
+      "Did I do that?",
+      "I wasn't even looking!"
+    ]
+  },
+  {
+    "green": 0.3,
+    "style": 0,
+    "deathPhrases": [
+      "I'll be back.",
+      "I need a vacation."
+    ],
+    "blue": 0.3,
+    "red": 1,
+    "shotPhrases": [
+      "I am beginning to learn at a geometric rate.",
+      "Come with me if you want to live.",
+      "I have detailed files on tank anatomy.",
+      "My mission is to terminate you."
+    ],
+    "name": "Terminator",
+    "killPhrases": [
+      "Hasta la vista, baby.",
+      "You're terminated."
+    ]
+  },
+  {
+    "green": 0.9,
+    "style": 1,
+    "deathPhrases": [
+      "Dude... wait, what?",
+      "Question authority!"
+    ],
+    "blue": 1,
+    "red": 0,
+    "shotPhrases": [
+      "I'm SO high right now.",
+      "Love is all you need!",
+      "Make love, not war!"
+    ],
+    "name": "Hippiebot",
+    "killPhrases": [
+      "Give peace a chance.",
+      "No nukes is good nukes!",
+      "Burn, baby, burn!"
+    ]
+  },
+  {
+    "green": 1,
+    "style": 1,
+    "deathPhrases": [
+      "If a man does his best, what else is there?",
+      "You're never beaten until you admit it."
+    ],
+    "blue": 1,
+    "red": 1,
+    "shotPhrases": [
+      "War is an art.",
+      "Lead me, follow me, or get out of my way.",
+      "Take calculated risks."
+    ],
+    "name": "Patton",
+    "killPhrases": [
+      "All glory is fleeting.",
+      "If everyone is thinking alike, someone isn't thinking.",
+      "May God have mercy upon my enemies, because I won't."
+    ]
+  },
+  {
+    "green": 0.4,
+    "style": 2,
+    "deathPhrases": [
+      "The best plan is the one made when the battle is over."
+    ],
+    "blue": 1,
+    "red": 0.4,
+    "shotPhrases": [
+      "Sweat saves blood.",
+      "In the absence of orders, go find something and kill it."
+    ],
+    "name": "Rommel",
+    "killPhrases": [
+      "Don't fight a battle if you don't gain anything by winning. ",
+      "The winner is the one who puts an extra round in his magazine."
+    ]
+  },
+  {
+    "green": 0.4,
+    "style": 0,
+    "deathPhrases": [
+      "The force is strong with this one.",
+      "Impressive.  Most impressive.",
+      "I sense something, a presence I've not felt since..."
+    ],
+    "blue": 0.4,
+    "red": 0.4,
+    "shotPhrases": [
+      "I find your lack of faith disturbing.",
+      "You don't know the power of the dark side!",
+      "I want that tank, not excuses.",
+      "You cannot hide forever!",
+      "You should not have come back!",
+      "I will deal with you myself."
+    ],
+    "name": "Darth Tank",
+    "killPhrases": [
+      "%t, I am your father.",
+      "Now I am the master.",
+      "You are unwise to lower your defenses!"
+    ]
+  },
+  {
+    "green": 0.65,
+    "style": 0,
+    "deathPhrases": [
+      "Uhura, signal our surrender.",
+      "Our shields are down!",
+      "Scotty, beam me up.",
+      "Live long and prosper.",
+      "She canna take any more, captain. She's gonna blow!"
+    ],
+    "blue": 0.1,
+    "red": 1,
+    "shotPhrases": [
+      "I do not believe you realize the gravity of your situation.",
+      "I was out saving the galaxy when your grandfather was in diapers.",
+      "Set phasers to 'kill'.",
+      "Shields up!",
+      "Make it so."
+    ],
+    "name": "Star Tank",
+    "killPhrases": [
+      "Resistance is futile.",
+      "Surrender and prepare to be boarded.",
+      "Random chance seems to have operated in our favor.",
+      "He's dead, Jim."
+    ]
+  }
+]

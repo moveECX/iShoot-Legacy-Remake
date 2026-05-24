@@ -1,0 +1,482 @@
+{
+  "Anderson Glacier.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Anderson Glacier.png"
+  },
+  "Banff 1.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Banff 1.png"
+  },
+  "Banff 2.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Banff 2.png"
+  },
+  "Giant's Causeway.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Giant's Causeway.png"
+  },
+  "GizaPyramids.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/GizaPyramids.png"
+  },
+  "Glacier 2.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Glacier 2.png"
+  },
+  "Glacier Towers.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Glacier Towers.png"
+  },
+  "Glacier.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Glacier.png"
+  },
+  "Monument Valley 2.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Monument Valley 2.png"
+  },
+  "Monument Valley.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Monument Valley.png"
+  },
+  "Mount Fuji.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Mount Fuji.png"
+  },
+  "Mountains of Ladakh.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Mountains of Ladakh.png"
+  },
+  "Snowy Mountains.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Snowy Mountains.png"
+  },
+  "Ten Mile Range.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Ten Mile Range.png"
+  },
+  "Vivid Green Hills 1.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Vivid Green Hills 1.png"
+  },
+  "Vivid Green Hills 2.png": {
+    "category": "background_landscape",
+    "path": "assets/backgrounds/landscapes/Vivid Green Hills 2.png"
+  },
+  "Angle.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Angle.png"
+  },
+  "Arrow.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Arrow.png"
+  },
+  "BlueButton.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/BlueButton.png"
+  },
+  "Button.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Button.png"
+  },
+  "Check.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Check.png"
+  },
+  "Chrome.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Chrome.png"
+  },
+  "ColorButton.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/ColorButton.png"
+  },
+  "ColorButtonGlow.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/ColorButtonGlow.png"
+  },
+  "Default.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Default.png"
+  },
+  "DeleteButton.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/DeleteButton.png"
+  },
+  "DriveLeft.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/DriveLeft.png"
+  },
+  "DriveRight.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/DriveRight.png"
+  },
+  "Header.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Header.png"
+  },
+  "Icon.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Icon.png"
+  },
+  "Icon.png.orig": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Icon.png.orig"
+  },
+  "Menu.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Menu.png"
+  },
+  "Shop.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Shop.png"
+  },
+  "ShopLine.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/ShopLine.png"
+  },
+  "TankButton.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TankButton.png"
+  },
+  "TankButtonGlow.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TankButtonGlow.png"
+  },
+  "TinyButton.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TinyButton.png"
+  },
+  "Title.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/Title.png"
+  },
+  "TitleLite.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TitleLite.png"
+  },
+  "TouchSprite.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TouchSprite.png"
+  },
+  "TouchToAim.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/TouchToAim.png"
+  },
+  "WindArrow.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/WindArrow.png"
+  },
+  "WindChrome.png": {
+    "category": "sprite_ui",
+    "path": "assets/sprites/ui/WindChrome.png"
+  },
+  "Atomic Blast 01.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Atomic Blast 01.wav"
+  },
+  "Atomic Blast 02.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Atomic Blast 02.wav"
+  },
+  "Explosion Short 01.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Explosion Short 01.wav"
+  },
+  "Explosion Short 02.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Explosion Short 02.wav"
+  },
+  "Explosion Small 01.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Explosion Small 01.wav"
+  },
+  "Explosion Small 02.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Explosion Small 02.wav"
+  },
+  "Explosion Small 03.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Explosion Small 03.wav"
+  },
+  "Fireball.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Fireball.wav"
+  },
+  "Grenade.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Grenade.wav"
+  },
+  "Rocket.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Rocket.wav"
+  },
+  "Underground Explosion.wav": {
+    "category": "audio_sfx",
+    "path": "assets/audio/sfx/Underground Explosion.wav"
+  },
+  "Capitol.png": {
+    "category": "background_landscape_bonus",
+    "path": "assets/backgrounds/landscapes/Capitol.png"
+  },
+  "Mount Rushmore.png": {
+    "category": "background_landscape_bonus",
+    "path": "assets/backgrounds/landscapes/Mount Rushmore.png"
+  },
+  "White House.png": {
+    "category": "background_landscape_bonus",
+    "path": "assets/backgrounds/landscapes/White House.png"
+  },
+  "Clouds2.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds2.png"
+  },
+  "Clouds3.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds3.png"
+  },
+  "Clouds4.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds4.png"
+  },
+  "Clouds5.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds5.png"
+  },
+  "Clouds6.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds6.png"
+  },
+  "Clouds7.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Clouds7.png"
+  },
+  "Dark_Sky.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Dark_Sky.png"
+  },
+  "Puffy Cumulus.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Puffy Cumulus.png"
+  },
+  "Sunset1.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Sunset1.png"
+  },
+  "Sunset2.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Sunset2.png"
+  },
+  "Sunset3.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Sunset3.png"
+  },
+  "Sunset4.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Sunset4.png"
+  },
+  "Vivid Blue 1.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Vivid Blue 1.png"
+  },
+  "Vivid Blue 2.png": {
+    "category": "background_sky",
+    "path": "assets/backgrounds/skies/Vivid Blue 2.png"
+  },
+  "Crusader-barrel.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/Crusader-barrel.png"
+  },
+  "Crusader.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/Crusader.png"
+  },
+  "LargeExcavator.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/LargeExcavator.png"
+  },
+  "M1A2-barrel.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/M1A2-barrel.png"
+  },
+  "M1A2.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/M1A2.png"
+  },
+  "Panzer-barrel.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/Panzer-barrel.png"
+  },
+  "Panzer.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/Panzer.png"
+  },
+  "Roller.png": {
+    "category": "sprite_tank",
+    "path": "assets/sprites/tanks/Roller.png"
+  },
+  "Dart.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/Dart.png"
+  },
+  "FatMan.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/FatMan.png"
+  },
+  "Green Rocket.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/Green Rocket.png"
+  },
+  "LargeBronzeShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/LargeBronzeShell.png"
+  },
+  "LargeGreenYellowSilverRocket.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/LargeGreenYellowSilverRocket.png"
+  },
+  "LargeOrangeShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/LargeOrangeShell.png"
+  },
+  "MediumBrownShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/MediumBrownShell.png"
+  },
+  "MediumGoldShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/MediumGoldShell.png"
+  },
+  "MediumGrayShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/MediumGrayShell.png"
+  },
+  "Red Rocket.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/Red Rocket.png"
+  },
+  "RedYellowShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/RedYellowShell.png"
+  },
+  "Small Rocket.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/Small Rocket.png"
+  },
+  "SmallBrownShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/SmallBrownShell.png"
+  },
+  "SmallExcavator.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/SmallExcavator.png"
+  },
+  "TinyShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/TinyShell.png"
+  },
+  "YellowTippedGreenShell.png": {
+    "category": "sprite_projectile",
+    "path": "assets/sprites/projectiles/YellowTippedGreenShell.png"
+  },
+  "Dirt.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Dirt.png"
+  },
+  "Explosion-LightBlue.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Explosion-LightBlue.png"
+  },
+  "Explosion-Violet.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Explosion-Violet.png"
+  },
+  "Explosion-YellowOrange.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Explosion-YellowOrange.png"
+  },
+  "Fire.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Fire.png"
+  },
+  "Smoke1.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Smoke1.png"
+  },
+  "Smoke2.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Smoke2.png"
+  },
+  "Smoke3.png": {
+    "category": "sprite_effect",
+    "path": "assets/sprites/effects/Smoke3.png"
+  },
+  "Explosion-Blue.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion-Blue.png"
+  },
+  "Explosion-Green.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion-Green.png"
+  },
+  "Explosion-Nuclear.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion-Nuclear.png"
+  },
+  "Explosion-Purple.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion-Purple.png"
+  },
+  "Explosion-Yellow.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion-Yellow.png"
+  },
+  "Explosion.png": {
+    "category": "sprite_explosion",
+    "path": "assets/sprites/explosions/Explosion.png"
+  },
+  "Ground1.png": {
+    "category": "background_ground",
+    "path": "assets/backgrounds/ground/Ground1.png"
+  },
+  "Ground2.png": {
+    "category": "background_ground",
+    "path": "assets/backgrounds/ground/Ground2.png"
+  },
+  "Ground3.png": {
+    "category": "background_ground",
+    "path": "assets/backgrounds/ground/Ground3.png"
+  },
+  "Ground4.png": {
+    "category": "background_ground",
+    "path": "assets/backgrounds/ground/Ground4.png"
+  },
+  "Ground5.png": {
+    "category": "background_ground",
+    "path": "assets/backgrounds/ground/Ground5.png"
+  },
+  "index.html": {
+    "category": "manual",
+    "path": "assets/manual/index.html"
+  },
+  "style.css": {
+    "category": "manual",
+    "path": "assets/manual/style.css"
+  },
+  "Music0.mp3": {
+    "category": "audio_music",
+    "path": "assets/audio/music/Music0.mp3"
+  },
+  "Music1.mp3": {
+    "category": "audio_music",
+    "path": "assets/audio/music/Music1.mp3"
+  },
+  "Music2.mp3": {
+    "category": "audio_music",
+    "path": "assets/audio/music/Music2.mp3"
+  },
+  "Music3.mp3": {
+    "category": "audio_music",
+    "path": "assets/audio/music/Music3.mp3"
+  }
+}

@@ -1,0 +1,20 @@
+# Backup / conversion leftovers
+*.orig
+*.bak
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node (the game itself needs no build step / dependencies)
+node_modules/
+package-lock.json

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>iShoot Remake</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <style>
+    /* ===== CRT / Militär-Terminal: Phosphor-Grün auf Schwarz ===== */
+    :root {
+      --bg:        #03070a;
+      --bg-2:      #061109;
+      --panel:     #07140d;
+      --panel-2:   #0c2014;
+      --border:    #1a6f3e;
+      --border-2:  #2a9a57;
+      --text:      #62ff8c;
+      --text-dim:  #36b061;
+      --text-mute: #2a7045;
+      --accent:    #9dffb8;
+      --accent-d:  #43d977;
+      --blue:      #49d0ff;
+      --good:      #62ff8c;
+      --warn:      #ffd24a;
+      --bad:       #ff6a4a;
+      --radius:    3px;
+      --radius-s:  2px;
+      --shadow:    0 0 0 1px rgba(42,154,87,.25), 0 0 38px rgba(20,130,65,.22), 0 18px 50px rgba(0,0,0,.72);
+      --glow:      0 0 6px rgba(80,255,140,.45);
+      --font:      ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --mono:      ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      /* Scanline-Layer (über Panels, pointer-events:none) */
+      --scan:      linear-gradient(rgba(0,0,0,0) 50%, rgba(0,14,6,.32) 50%);
+    }
+
+    * { box-sizing: border-box; }
+
+    /* CRT-Animationen */
+    @keyframes flicker { 0%,100% { opacity: .94; } 45% { opacity: 1; } 70% { opacity: .9; } 80% { opacity: .98; } }
+    @keyframes blink   { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background:
+        radial-gradient(circle at 50% 35%, #07160d 0%, var(--bg) 72%),
+        #03070a;
+      color: var(--text);
+      font-family: var(--font);
+      overflow: hidden;
+    }
+    body {
+      display: grid;
+      place-items: center;
+      gap: 14px;
+    }
+
+    /* ---- Spielfeld ---- */
+    #stage {
+      width: min(96vw, calc(94vh * 480 / 320));
+      aspect-ratio: 480 / 320;
+      image-rendering: pixelated;
+      background: #000;
+      border-radius: var(--radius-s);
+      box-shadow: 0 0 0 1px var(--border), 0 0 26px rgba(25,150,80,.28), var(--shadow);
+      cursor: crosshair;
+    }
+
+    /* ---- HUD-Hilfezeile ---- */
+    #hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      max-width: min(96vw, 900px);
+      text-shadow: var(--glow);
+    }
+    #hud span { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+    #status { min-width: 80px; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
+    #status::before { content: "▸ "; color: var(--text-dim); }
+    kbd {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 1px 5px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+    }
+    kbd::before { content: "["; color: var(--text-mute); }
+    kbd::after  { content: "]"; color: var(--text-mute); }
+
+    /* ============ Generische Modals ============ */
+    .overlay {
+      position: fixed; inset: 0;
+      display: grid; place-items: center;
+      background: rgba(2,8,5,.78);
+      backdrop-filter: blur(2px);
+      z-index: 10;
+      font-size: 13px;
+      animation: fade .12s ease-out;
+    }
+    .overlay[hidden] { display: none; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .card {
+      position: relative;
+      background:
+        radial-gradient(120% 100% at 50% 0%, var(--panel-2) 0%, var(--panel) 60%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), inset 0 0 48px rgba(0,0,0,.55);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow: hidden;
+      text-shadow: var(--glow);
+    }
+    /* CRT-Scanlines + leichtes Flackern über jeder Karte (klickdurchlässig). */
+    .card::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 8;
+      border-radius: inherit;
+      background: var(--scan); background-size: 100% 3px;
+      opacity: .45; animation: flicker 5s infinite;
+    }
+    /* Eck-Klammern für den Terminal-Rahmen. */
+    .card::before {
+      content: ""; position: absolute; inset: 5px; pointer-events: none; z-index: 8;
+      border: 1px solid rgba(42,154,87,.28);
+      border-radius: 2px;
+    }
+    /* Modals ohne separate scrollende Body-Region: ganze Card scrollbar. */
+    #menu-card, #pause-card { overflow-y: auto; }
+    /* Selects/Inputs in Grids dürfen das Grid nicht sprengen. */
+    select, input { min-width: 0; max-width: 100%; }
+    .modal-header, #shop-header, #ruleeditor-header, #weaponeditor-header {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(20,60,36,.55), rgba(7,20,13,.2));
+    }
+    .modal-header h3, #ruleeditor-header h3, #weaponeditor-header h3 {
+      margin: 0; font-size: 14px; font-weight: 600; flex: 1;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--accent);
+    }
+    .modal-header h3::before, #ruleeditor-header h3::before, #weaponeditor-header h3::before {
+      content: "> "; color: var(--text-dim);
+    }
+    .modal-header h3::after, #ruleeditor-header h3::after, #weaponeditor-header h3::after {
+      content: "_"; color: var(--accent); animation: blink 1.1s step-end infinite;
+    }
+    .modal-body { padding: 15px; overflow-y: auto; position: relative; z-index: 2; }
+    .modal-footer {
+      position: relative; z-index: 2;
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 11px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-2);
+    }
+    .modal-x, #shop-close, #ruleeditor-close, #weaponeditor-close, #settings-close {
+      background: transparent; color: var(--text-dim);
+      border: 1px solid var(--border); border-radius: var(--radius-s);
+      width: 26px; height: 26px; line-height: 1; font-size: 16px;
+      cursor: pointer; transition: .12s;
+      display: grid; place-items: center;
+    }
+    .modal-x:hover, #shop-close:hover, #ruleeditor-close:hover,
+    #weaponeditor-close:hover, #settings-close:hover {
+      background: var(--bad); color: #1a0a06; border-color: var(--bad);
+      box-shadow: 0 0 10px rgba(255,106,74,.5);
+    }
+
+    /* ============ Buttons ============ */
+    button {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-s);
+      padding: 7px 14px;
+      cursor: pointer;
+      text-transform: uppercase; letter-spacing: .05em;
+      text-shadow: var(--glow);
+      transition: background .12s, border-color .12s, box-shadow .12s, color .12s, transform .04s;
+    }
+    button:hover {
+      background: #103019; border-color: var(--border-2); color: var(--accent);
+      box-shadow: 0 0 10px rgba(60,220,120,.4), inset 0 0 12px rgba(40,160,80,.18);
+    }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
+    .btn-primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-d));
+      border-color: var(--accent); color: #03140a; font-weight: 700; text-shadow: none;
+      box-shadow: 0 0 14px rgba(90,255,150,.45);
+    }
+    .btn-primary:hover { background: var(--accent); border-color: #cfffe0; color: #03140a; box-shadow: 0 0 18px rgba(120,255,170,.6); }
+    .btn-small { padding: 3px 9px; font-size: 11px; }
+    .btn-danger { background: #2a1410; border-color: #7a3422; color: #ff9a80; }
+    .btn-danger:hover { background: var(--bad); color: #1a0a06; border-color: var(--bad); box-shadow: 0 0 12px rgba(255,106,74,.5); }
+
+    /* ============ Inputs ============ */
+    input[type="text"], input[type="number"], select, textarea {
+      font-family: var(--mono); font-size: 13px;
+      color: var(--text);
+      background: #04100a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-s);
+      padding: 6px 8px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(90,255,150,.3);
+    }
+    input[type="color"] { padding: 2px; height: 30px; width: 44px; background: #04100a; cursor: pointer; }
+    input[type="range"] { accent-color: var(--accent); }
+    input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+    /* ============ Title-Screen (Kommando-Konsole) ============ */
+    #title { z-index: 20; background:
+      radial-gradient(circle at 50% 30%, #07160d 0%, #03070a 72%), #03070a; }
+    #title-card {
+      position: relative;
+      width: min(620px, 96vw);
+      display: flex; flex-direction: column; gap: 10px; align-items: stretch;
+      padding: 12px;
+      background: radial-gradient(120% 100% at 50% 0%, var(--panel-2) 0%, var(--panel) 60%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), inset 0 0 60px rgba(0,0,0,.55);
+      text-shadow: var(--glow);
+    }
+    /* Scanlines über der ganzen Konsole (inkl. Castle-Bravo-Canvas). */
+    #title-card::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 8;
+      border-radius: inherit;
+      background: var(--scan); background-size: 100% 3px;
+      opacity: .5; animation: flicker 5s infinite;
+    }
+    #title-termbar {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--accent);
+      padding: 4px 6px; border: 1px solid var(--border); border-radius: 2px;
+      background: linear-gradient(180deg, rgba(20,60,36,.5), rgba(7,20,13,.15));
+    }
+    #title-termbar .tb-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--good); box-shadow: 0 0 8px var(--good);
+      animation: blink 1.6s step-end infinite;
+    }
+    #title-termbar .tb-r { margin-left: auto; color: var(--text-dim); }
+    #title-canvas {
+      width: 100%; aspect-ratio: 480 / 320; image-rendering: pixelated;
+      background: #050a07; border-radius: 2px;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 0 30px rgba(0,0,0,.7), 0 0 22px rgba(25,150,80,.22);
+    }
+    #title-bootline { font-size: 11px; color: var(--text-dim); padding: 0 2px; }
+    #title-bootline::after { content: "_"; color: var(--accent); animation: blink 1.1s step-end infinite; }
+    #title-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #title-buttons button { padding: 11px 10px; font-size: 13px; text-align: left; }
+    #title-buttons button::before { content: "▸ "; color: var(--text-dim); }
+    #title-buttons button:hover::before { color: var(--accent); }
+    #title-newgame {
+      grid-column: 1 / -1;
+      background: linear-gradient(180deg, var(--accent), var(--accent-d));
+      border-color: var(--accent); color: #03140a; font-weight: 700; text-shadow: none;
+      box-shadow: 0 0 14px rgba(90,255,150,.45);
+    }
+    #title-newgame::before { content: "▶ "; color: #03140a; }
+    #title-newgame:hover { background: var(--accent); box-shadow: 0 0 20px rgba(120,255,170,.6); }
+    #title-newgame:hover::before { color: #03140a; }
+
+    /* ============ Setup-Menü ============ */
+    #menu { z-index: 15; }
+    #menu-card { width: min(620px, 96vw); padding: 0; }
+    #menu-card h2 {
+      position: relative; z-index: 2;
+      margin: 0; padding: 14px 18px; font-size: 16px;
+      text-transform: uppercase; letter-spacing: .06em;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(20,60,36,.55), rgba(7,20,13,.2));
+      color: var(--accent);
+    }
+    #menu-card h2::before { content: "> "; color: var(--text-dim); }
+    #menu-card h2::after { content: "_"; color: var(--accent); animation: blink 1.1s step-end infinite; }
+    .menu-section { position: relative; z-index: 2; display: flex; gap: 12px; align-items: center; padding: 12px 18px; flex-wrap: wrap; }
+    .menu-section > label { color: var(--text-dim); text-transform: uppercase; font-size: 11px; letter-spacing: .04em; }
+    #menu-players { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .menu-player {
+      display: grid;
+      grid-template-columns: 28px 1fr 116px 138px 92px 46px;
+      gap: 7px; align-items: center;
+    }
+    .menu-slot { color: var(--text-mute); font-family: var(--mono); font-size: 12px; }
+    #menu-card > div:last-child { position: relative; z-index: 2; padding: 13px 18px; border-top: 1px solid var(--border); background: var(--bg-2); }
+    #menu-start { background: linear-gradient(180deg, var(--accent), var(--accent-d)); border-color: var(--accent); color: #03140a; font-weight: 700; text-shadow: none; padding: 8px 22px; box-shadow: 0 0 14px rgba(90,255,150,.45); }
+
+    /* ============ Shop ============ */
+    #shop { z-index: 11; }
+    #shop-card { width: min(480px, 94vw); }
+    #shop-title { flex: 1; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    #shop-title::before { content: "> "; color: var(--text-dim); }
+    #shop-cash { color: var(--good); font-family: var(--mono); font-weight: 700; }
+    #shop-list { position: relative; z-index: 2; overflow-y: auto; padding: 6px 0; max-height: 56vh; }
+    .shop-row {
+      display: grid; grid-template-columns: 1.4fr 66px 58px 34px auto;
+      gap: 8px; padding: 6px 14px; align-items: center;
+    }
+    .shop-row:hover { background: var(--panel-2); }
+    .shop-name { color: var(--text); }
+    .shop-type { color: var(--text-mute); font-size: 10px; font-family: var(--mono); }
+    .shop-price { color: var(--good); text-align: right; font-family: var(--mono); }
+    .shop-owned { color: var(--text-dim); text-align: right; font-family: var(--mono); }
+    .shop-actions { display: flex; gap: 4px; }
+    .shop-actions button { padding: 3px 8px; font-size: 11px; }
+    .shop-buy { background: #06301c; border-color: var(--border); color: var(--good); }
+    .shop-buy:hover { background: #0c4a2c; color: var(--accent); box-shadow: 0 0 8px rgba(60,220,120,.35); }
+    .shop-sell { background: #2a1d10; border-color: #6a4a22; color: var(--warn); }
+    .shop-sell:hover { background: #3d2a14; color: #ffe39a; }
+    #shop-footer { position: relative; z-index: 2; display: flex; justify-content: flex-end; padding: 11px 14px; border-top: 1px solid var(--border); background: var(--bg-2); }
+
+    /* ============ Pause ============ */
+    #pause { z-index: 12; }
+    #pause-card { width: min(440px, 94vw); padding: 18px; }
+    #pause-card h3 { position: relative; z-index: 2; margin: 0 0 14px; color: var(--accent); font-size: 15px; text-transform: uppercase; letter-spacing: .08em; }
+    #pause-card h3::before { content: "|| "; color: var(--text-dim); }
+    #pause-card h3::after { content: "_"; color: var(--accent); animation: blink 1.1s step-end infinite; }
+    #pause-savelist { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .pause-saverow { display: grid; grid-template-columns: 58px 1fr 84px 84px; gap: 6px; align-items: center; }
+    .pause-slot { color: var(--text-mute); font-family: var(--mono); font-size: 11px; }
+    .pause-slotlabel { color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+    .pause-saverow button { padding: 4px 8px; font-size: 11px; }
+    #pause-actions { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 8px; }
+
+    /* ============ Settings ============ */
+    /* z-index über ALLEM (Title=20), da Settings vom Title UND vom Pause-Menü
+       aus geöffnet wird, ohne dass das darunterliegende Overlay verschwindet. */
+    #settings { z-index: 30; }
+    #settings-card { width: min(480px, 94vw); }
+    .settings-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .settings-section:last-child { border-bottom: none; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 5px 0; }
+    .settings-row > span { color: var(--text-dim); }
+    .settings-row select, .settings-row input[type="range"] { min-width: 160px; }
+    .settings-hint { color: var(--text-mute); font-size: 11px; margin: 4px 0 0; }
+    .settings-subhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .settings-subhead::before { content: "// "; color: var(--text-dim); }
+    #settings-keys { display: flex; flex-direction: column; gap: 4px; }
+    .settings-keyrow { display: grid; grid-template-columns: 1fr 130px; gap: 10px; align-items: center; }
+    .settings-keylabel { color: var(--text-dim); }
+    .settings-keybtn { font-family: var(--mono); text-align: center; }
+    .settings-keybtn--active { background: var(--accent); color: #03140a; border-color: var(--accent); box-shadow: 0 0 12px rgba(90,255,150,.5); }
+
+    /* ============ Rule-Editor ============ */
+    #ruleeditor { z-index: 18; }
+    #ruleeditor-card { width: min(540px, 94vw); }
+    #ruleeditor-mode { color: var(--text-dim); }
+    #ruleeditor-list { position: relative; z-index: 2; overflow-y: auto; padding: 10px 16px; max-height: 60vh; }
+    .rule-row { display: grid; grid-template-columns: 1fr 200px; gap: 12px; align-items: center; padding: 5px 0; color: var(--text); }
+    .rule-numeric { display: flex; align-items: center; gap: 8px; }
+    .rule-numeric input { width: 96px; }
+    .rule-default { color: var(--text-mute); font-size: 10px; font-family: var(--mono); }
+    .rule-toggle { display: flex; align-items: center; gap: 6px; color: var(--text-dim); }
+    #ruleeditor-footer { position: relative; z-index: 2; display: flex; justify-content: space-between; padding: 11px 14px; border-top: 1px solid var(--border); background: var(--bg-2); }
+
+    /* ============ Waffen-Editor ============ */
+    #weaponeditor { z-index: 19; }
+    #weaponeditor-card { width: min(840px, 96vw); height: min(600px, 92vh); }
+    #weaponeditor-mode { color: var(--text-dim); flex: 1; }
+    #weaponeditor-body { position: relative; z-index: 2; display: grid; grid-template-columns: 248px 1fr; flex: 1; min-height: 0; }
+    #weaponeditor-list { overflow-y: auto; border-right: 1px solid var(--border); background: var(--bg-2); }
+    .weditor-row { display: grid; grid-template-columns: 1fr 64px 48px; gap: 6px; padding: 7px 12px; cursor: pointer; border-bottom: 1px solid rgba(60,200,110,.06); transition: background .1s; }
+    .weditor-row:hover { background: var(--panel-2); }
+    .weditor-row--sel { background: #103019 !important; box-shadow: inset 3px 0 0 var(--accent); }
+    .weditor-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .weditor-type { color: var(--text-mute); font-size: 9px; font-family: var(--mono); }
+    .weditor-price { color: var(--good); text-align: right; font-family: var(--mono); font-size: 11px; }
+    #weaponeditor-form { overflow-y: auto; padding: 14px 18px; }
+    .weditor-formhead { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .weditor-formkey { color: var(--accent); font-weight: 600; flex: 1; }
+    .weditor-formtype { color: var(--text-mute); font-size: 10px; font-family: var(--mono); }
+    .weditor-delete { background: #3a2020; border-color: #6a3636; padding: 3px 9px; font-size: 11px; }
+    .weditor-delete:hover { background: var(--bad); color: #fff; }
+    .weditor-field { display: grid; grid-template-columns: 132px 1fr; gap: 10px; align-items: center; padding: 4px 0; }
+    .weditor-field > label { color: var(--text-dim); }
+    .weditor-input { display: flex; align-items: center; gap: 6px; }
+    .weditor-input > select, .weditor-input > input[type="text"],
+    .weditor-input > input[type="number"], .weditor-input > textarea { flex: 1; min-width: 0; }
+    .weditor-input textarea { resize: vertical; min-height: 30px; width: 100%; }
+    .weditor-price-wrap { display: flex; gap: 8px; align-items: center; flex: 1; }
+    .weditor-price-wrap label { color: var(--text-dim); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    /* QoL: Sprite-Vorschau + Preview-/Edit-Buttons */
+    .weditor-preview {
+      width: 50px; height: 26px; image-rendering: pixelated;
+      background: repeating-conic-gradient(#0d2114 0% 25%, #07140d 0% 50%) 0 0 / 10px 10px;
+      border: 1px solid var(--border); border-radius: 2px; flex: none;
+    }
+    .weditor-sound-btn, .weditor-subedit-btn {
+      flex: none; padding: 4px 9px; font-size: 12px; line-height: 1;
+      background: var(--panel-2); border-color: var(--border-2);
+    }
+    .weditor-sound-btn:hover:not(:disabled), .weditor-subedit-btn:hover:not(:disabled) { background: var(--accent); color: #1a1206; border-color: var(--accent); }
+    #weaponeditor-footer { position: relative; z-index: 2; display: flex; justify-content: space-between; padding: 11px 14px; border-top: 1px solid var(--border); background: var(--bg-2); }
+    #weaponeditor-leftbtns { display: flex; gap: 8px; }
+    #weaponeditor-new { background: #06301c; border-color: var(--border); color: var(--good); }
+    #weaponeditor-new:hover { background: #0c4a2c; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <canvas id="stage" width="480" height="320"></canvas>
+
+  <div id="title" class="overlay" hidden>
+    <div id="title-card">
+      <div id="title-termbar">
+        <span class="tb-dot"></span> ISHOOT.SYS
+        <span class="tb-r">TACTICAL ARTILLERY · DEFCON 1</span>
+      </div>
+      <canvas id="title-canvas" width="480" height="320"></canvas>
+      <div id="title-bootline">&gt; system online · select option </div>
+      <div id="title-buttons">
+        <button id="title-newgame">Neues Spiel</button>
+        <button id="title-load">Laden</button>
+        <button id="title-settings">Einstellungen</button>
+        <button id="title-profiles">Bestenliste</button>
+        <button id="title-help">Hilfe</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden>
+    <div id="pause-card" class="card">
+      <h3>Pause</h3>
+      <div id="pause-savelist"></div>
+      <div id="pause-actions">
+        <button id="pause-quit" class="btn-danger">Zum Titelbildschirm</button>
+        <button id="pause-resume" class="btn-primary">Weiter</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings" class="overlay" hidden>
+    <div id="settings-card" class="card">
+      <div class="modal-header">
+        <h3>Einstellungen</h3>
+        <button id="settings-close" class="modal-x">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-section">
+          <label class="settings-row">
+            <span>Render-Auflösung</span>
+            <select id="settings-scale">
+              <option value="1">1× (480×320)</option>
+              <option value="2">2× (960×640)</option>
+              <option value="3">3× (1440×960)</option>
+            </select>
+          </label>
+          <p class="settings-hint">Höher = schärfer + glattere Krater. Wird beim nächsten Spielstart aktiv.</p>
+        </div>
+        <div class="settings-section">
+          <label class="settings-row"><span>Soundeffekte</span><input type="checkbox" id="settings-sound"></label>
+          <label class="settings-row"><span>Musik</span><input type="checkbox" id="settings-music"></label>
+          <label class="settings-row"><span>Musik-Lautstärke</span><input type="range" id="settings-volume" min="0" max="100"></label>
+        </div>
+        <div class="settings-section">
+          <div class="settings-subhead">
+            <span>Tastenbelegung</span>
+            <button id="settings-reset-keys" class="btn-small">Zurücksetzen</button>
+          </div>
+          <div id="settings-keys"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="settings-apply" class="btn-primary">Übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="weaponeditor" class="overlay" hidden>
+    <div id="weaponeditor-card" class="card">
+      <div id="weaponeditor-header">
+        <h3>Waffen-Editor</h3>
+        <span id="weaponeditor-mode"></span>
+        <button id="weaponeditor-close">×</button>
+      </div>
+      <div id="weaponeditor-body">
+        <div id="weaponeditor-list"></div>
+        <div id="weaponeditor-form"></div>
+      </div>
+      <div id="weaponeditor-footer">
+        <div id="weaponeditor-leftbtns">
+          <button id="weaponeditor-new">+ Neue Waffe</button>
+          <button id="weaponeditor-reset">Defaults</button>
+        </div>
+        <button id="weaponeditor-apply" class="btn-primary">Übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ruleeditor" class="overlay" hidden>
+    <div id="ruleeditor-card" class="card">
+      <div id="ruleeditor-header">
+        <h3>Regeln</h3>
+        <span id="ruleeditor-mode"></span>
+        <button id="ruleeditor-close">×</button>
+      </div>
+      <div id="ruleeditor-list"></div>
+      <div id="ruleeditor-footer">
+        <button id="ruleeditor-reset">Defaults</button>
+        <button id="ruleeditor-apply" class="btn-primary">Übernehmen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="menu" class="overlay" hidden>
+    <div id="menu-card" class="card">
+      <h2>iShoot Remake</h2>
+      <div class="menu-section">
+        <label>Modus</label>
+        <select id="menu-mode"></select>
+        <label style="margin-left: 12px;">Runden</label>
+        <input id="menu-rounds" type="number" min="1" max="20" value="3" style="width: 56px;">
+        <button id="menu-edit-rules" type="button" style="margin-left: auto;">Regeln…</button>
+        <button id="menu-edit-weapons" type="button">Waffen…</button>
+      </div>
+      <div class="menu-section" style="flex-direction: column; align-items: stretch;">
+        <label style="margin-bottom: 4px;">Spieler</label>
+        <div id="menu-players"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="menu-load" type="button">Laden…</button>
+        <button id="menu-start" class="btn-primary">Spielen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="shop" class="overlay" hidden>
+    <div id="shop-card" class="card">
+      <div id="shop-header">
+        <span id="shop-title">Shop</span>
+        <span id="shop-cash">$0</span>
+        <button id="shop-close" title="Schließen">×</button>
+      </div>
+      <div id="shop-list"></div>
+      <div id="shop-footer">
+        <button id="shop-done" class="btn-primary">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="hud">
+    <span id="status">booting…</span>
+    <span><kbd>Maus</kbd> zielen</span>
+    <span><kbd>Klick+Halten</kbd> Power</span>
+    <span><kbd>←/→</kbd> fahren</span>
+    <span><kbd>Q/E</kbd> Waffe</span>
+    <span><kbd>S</kbd> Shop</span>
+    <span><kbd>Esc</kbd> Pause</span>
+    <span><kbd>H</kbd> Hitboxen</span>
+    <span id="info"></span>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

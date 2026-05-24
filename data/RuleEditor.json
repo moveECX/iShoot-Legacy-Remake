@@ -1,0 +1,695 @@
+[
+  {
+    "key": "rulesetName",
+    "type": "string",
+    "name": "Name"
+  },
+  {
+    "contents": [
+      {
+        "min": 1,
+        "key": "tankHealth",
+        "type": "int",
+        "name": "Tank Health"
+      },
+      {
+        "key": "maxWind",
+        "type": "int",
+        "max": 100,
+        "name": "Max Wind"
+      },
+      {
+        "key": "fuel",
+        "type": "int",
+        "name": "Fuel"
+      },
+      {
+        "key": "steepDriving",
+        "type": "boolean",
+        "name": "Steep Driving"
+      },
+      {
+        "key": "talkingCPUs",
+        "type": "boolean",
+        "name": "Talking CPUs"
+      },
+      {
+        "key": "fastForward",
+        "type": "boolean",
+        "name": "Fast Forward"
+      }
+    ],
+    "type": "submenu",
+    "name": "Basic Rules"
+  },
+  {
+    "contents": [
+      {
+        "min": 30,
+        "key": "gravity",
+        "type": "int",
+        "max": 500,
+        "name": "Gravity"
+      },
+      {
+        "key": "dirtClods",
+        "type": "boolean",
+        "name": "Dirt Clods"
+      },
+      {
+        "key": "weaponSmoke",
+        "type": "boolean",
+        "name": "Weapon Smoke"
+      }
+    ],
+    "type": "submenu",
+    "name": "Advanced Rules"
+  },
+  {
+    "contents": [
+      {
+        "contents": [
+          {
+            "key": "startingCash",
+            "type": "int",
+            "max": 9999999,
+            "name": "Initial"
+          },
+          {
+            "key": "cashPerRoundIncrease",
+            "type": "int",
+            "max": 9999999,
+            "name": "Increase per Round"
+          },
+          {
+            "key": "maxCashPerRound",
+            "type": "int",
+            "max": 9999999,
+            "name": "Max"
+          }
+        ],
+        "type": "submenu",
+        "name": "$ per Round"
+      },
+      {
+        "key": "cashPerKill",
+        "type": "int",
+        "max": 9999999,
+        "name": "$ per Kill"
+      },
+      {
+        "key": "cashPerDamage",
+        "type": "int",
+        "max": 99999,
+        "name": "$ per Damage Point"
+      }
+    ],
+    "type": "submenu",
+    "name": "Economy"
+  },
+  {
+    "contents": [
+      {
+        "type": "landscape",
+        "name": "Anderson Glacier.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Banff 1.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Banff 2.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Giant's Causeway.png"
+      },
+      {
+        "type": "landscape",
+        "name": "GizaPyramids.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Glacier 2.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Glacier Towers.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Glacier.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Monument Valley 2.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Monument Valley.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Mount Fuji.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Mountains of Ladakh.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Snowy Mountains.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Ten Mile Range.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Vivid Green Hills 1.png"
+      },
+      {
+        "type": "landscape",
+        "name": "Vivid Green Hills 2.png"
+      }
+    ],
+    "type": "submenu",
+    "name": "Landscapes"
+  },
+  {
+    "sounds": [
+      "Atomic Blast 01.wav",
+      "Atomic Blast 02.wav",
+      "Explosion Small 01.wav",
+      "Explosion Small 02.wav",
+      "Explosion Small 03.wav",
+      "Explosion Short 01.wav",
+      "Explosion Short 02.wav",
+      "Rocket.wav",
+      "Fireball.wav",
+      "Grenade.wav",
+      "Underground Explosion.wav"
+    ],
+    "types": {
+      "roller": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "damage",
+          "type": "int",
+          "name": "Damage"
+        },
+        {
+          "min": 1,
+          "key": "blastRadius",
+          "type": "int",
+          "max": 25,
+          "name": "Blast Radius"
+        },
+        {
+          "key": "explosionTexture",
+          "type": "explosionTexture",
+          "name": "Explosion"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "dirtClods",
+          "type": "int",
+          "max": 100,
+          "name": "Dirt Clods"
+        },
+        {
+          "key": "createDirt",
+          "type": "boolean",
+          "name": "Create Dirt Ball"
+        }
+      ],
+      "nuke": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "damage",
+          "type": "int",
+          "name": "Damage"
+        },
+        {
+          "min": "1",
+          "key": "blastRadius",
+          "type": "int",
+          "max": "25",
+          "name": "Blast Radius"
+        },
+        {
+          "key": "explosionTexture",
+          "type": "explosionTexture",
+          "name": "Explosion Texture"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "createDirt",
+          "type": "boolean",
+          "name": "Create Dirt Ball"
+        }
+      ],
+      "clusterBomb": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "submunition",
+          "type": "submunition",
+          "name": "Submunition"
+        },
+        {
+          "min": 1,
+          "key": "count",
+          "type": "int",
+          "max": 200,
+          "name": "Submunition Count"
+        },
+        {
+          "key": "burstPowerX",
+          "type": "int",
+          "max": 100,
+          "name": "Burst Power X"
+        },
+        {
+          "key": "burstPowerY",
+          "type": "int",
+          "max": 100,
+          "name": "Burst Power Y"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "apexFuse",
+          "type": "boolean",
+          "name": "Apex Fuse"
+        },
+        {
+          "key": "delayFuse",
+          "type": "int",
+          "name": "Delay Fuse"
+        }
+      ],
+      "machineGun": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "munition",
+          "type": "submunition",
+          "name": "Munition"
+        },
+        {
+          "min": 1,
+          "key": "shotsPerGroup",
+          "type": "int",
+          "max": 200,
+          "name": "Shots per Group"
+        },
+        {
+          "min": 1,
+          "key": "groups",
+          "type": "int",
+          "max": 200,
+          "name": "Groups"
+        },
+        {
+          "min": 1,
+          "key": "delayBetweenGroups",
+          "type": "int",
+          "max": 120,
+          "name": "Frames / Group"
+        },
+        {
+          "key": "angleVariance",
+          "type": "int",
+          "max": 180,
+          "name": "Angle Variance"
+        },
+        {
+          "key": "powerVariance",
+          "type": "int",
+          "max": 50,
+          "name": "Power Variance"
+        }
+      ],
+      "skylance": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "damage",
+          "type": "int",
+          "name": "Damage"
+        },
+        {
+          "min": "1",
+          "key": "blastRadius",
+          "type": "int",
+          "max": "25",
+          "name": "Blast Radius"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "explosionTexture",
+          "type": "explosionTexture",
+          "name": "Explosion"
+        },
+        {
+          "key": "createDirt",
+          "type": "boolean",
+          "name": "Create Dirt Wall"
+        }
+      ],
+      "shell": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "damage",
+          "type": "int",
+          "name": "Damage"
+        },
+        {
+          "min": 1,
+          "key": "blastRadius",
+          "type": "int",
+          "max": 25,
+          "name": "Blast Radius"
+        },
+        {
+          "key": "explosionTexture",
+          "type": "explosionTexture",
+          "name": "Explosion Texture"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "dirtClods",
+          "type": "int",
+          "max": 100,
+          "name": "Dirt Clods"
+        },
+        {
+          "key": "createDirt",
+          "type": "boolean",
+          "name": "Create Dirt Ball"
+        }
+      ],
+      "random": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "submunitions",
+          "type": "submunitions",
+          "name": "Choices"
+        }
+      ],
+      "penetrator": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "damage",
+          "type": "int",
+          "name": "Damage"
+        },
+        {
+          "key": "explosionTexture",
+          "type": "explosionTexture",
+          "name": "Explosion Texture"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        },
+        {
+          "key": "dirtClods",
+          "type": "int",
+          "max": 100,
+          "name": "Dirt Clods"
+        }
+      ],
+      "groundBurst": [
+        {
+          "key": "name",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "key": "description",
+          "type": "textArea",
+          "name": "Description"
+        },
+        {
+          "key": "price",
+          "type": "price",
+          "name": "Price"
+        },
+        {
+          "key": "image",
+          "type": "weaponSprite",
+          "name": "Appearance"
+        },
+        {
+          "key": "submunition",
+          "type": "submunition",
+          "name": "Submunition"
+        },
+        {
+          "min": 1,
+          "key": "count",
+          "type": "int",
+          "max": 200,
+          "name": "Submunition Count"
+        },
+        {
+          "key": "burstPower",
+          "type": "int",
+          "name": "Burst Power"
+        },
+        {
+          "key": "launchSound",
+          "type": "sound",
+          "name": "Launch Sound"
+        },
+        {
+          "key": "explosionSound",
+          "type": "sound",
+          "name": "Explosion Sound"
+        }
+      ]
+    },
+    "sprites": [
+      "TinyShell.png",
+      "MediumGrayShell.png",
+      "LargeBronzeShell.png",
+      "Dart.png",
+      "Small Rocket.png",
+      "Green Rocket.png",
+      "Red Rocket.png",
+      "FatMan.png",
+      "YellowTippedGreenShell.png",
+      "LargeExcavator.png",
+      "LargeGreenYellowSilverRocket.png",
+      "MediumBrownShell.png",
+      "RedYellowShell.png",
+      "SmallBrownShell.png",
+      "SmallExcavator.png",
+      "LargeOrangeShell.png"
+    ],
+    "type": "weapons",
+    "name": "Weapons",
+    "explosionTextures": [
+      "Explosion.png",
+      "Explosion-Nuclear.png",
+      "Explosion-Green.png",
+      "Explosion-Blue.png",
+      "Explosion-Purple.png",
+      "Explosion-YellowOrange.png",
+      "Explosion-Yellow.png",
+      "Explosion-Violet.png"
+    ]
+  }
+]
