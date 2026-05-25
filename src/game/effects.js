@@ -61,8 +61,6 @@ export class Quote {
   render(ctx) {
     if (this.finished || this.tank.isDead()) return;
     const t = this.tank;
-    const x = t.x;
-    const y = t.y - t.height() - 26;
     const fadeIn  = Math.min(1, this.age / 5);
     const fadeOut = Math.min(1, (this.lifetime - this.age) / 10);
     const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
@@ -71,25 +69,60 @@ export class Quote {
     ctx.font = "9px ui-monospace, Menlo, monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
-    const w = Math.min(160, ctx.measureText(this.text).width + 8);
-    const h = 13;
+
+    // Wortumbruch: die Blase wird mehrzeilig, damit der weiße Hintergrund den
+    // (je nach Sprache unterschiedlich langen) Text immer vollständig umschließt.
+    const MAX_W = 150, PADX = 5, PADY = 3, LINE_H = 11;
+    const lines = wrapText(ctx, this.text, MAX_W);
+    let textW = 0;
+    for (const ln of lines) textW = Math.max(textW, ctx.measureText(ln).width);
+    const boxW = Math.ceil(textW + PADX * 2);
+    const boxH = lines.length * LINE_H + PADY * 2;
+
+    const tipX = t.x;                                  // Schwanz zeigt auf den Tank
+    const bottom = t.y - t.height() - 16;              // Unterkante der Blase
+    const top = bottom - boxH;
+    // Mitte der Blase, am Bildrand eingeklemmt, damit sie nicht abgeschnitten wird.
+    const cx = Math.max(boxW / 2 + 2, Math.min(478 - boxW / 2, tipX));
+
     // Hintergrund
     ctx.globalAlpha = alpha * 0.85;
     ctx.fillStyle = "#fff";
-    ctx.fillRect(x - w / 2, y - h, w, h);
+    ctx.fillRect(cx - boxW / 2, top, boxW, boxH);
     // Schwanz zur Tank-Spitze
     ctx.beginPath();
-    ctx.moveTo(x - 3, y);
-    ctx.lineTo(x, y + 3);
-    ctx.lineTo(x + 3, y);
+    ctx.moveTo(tipX - 3, bottom);
+    ctx.lineTo(tipX, bottom + 3);
+    ctx.lineTo(tipX + 3, bottom);
     ctx.closePath();
     ctx.fill();
-    // Text
+    // Text (zeilenweise)
     ctx.globalAlpha = alpha;
     ctx.fillStyle = "#111";
-    ctx.fillText(this.text, x, y - 3);
+    for (let i = 0; i < lines.length; i++) {
+      ctx.fillText(lines[i], cx, top + PADY + (i + 1) * LINE_H - 2);
+    }
     ctx.restore();
   }
+}
+
+/** Bricht text an Wortgrenzen so um, dass keine Zeile breiter als maxW ist. */
+function wrapText(ctx, text, maxW) {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [String(text)];
+  const lines = [];
+  let cur = "";
+  for (const word of words) {
+    const test = cur ? cur + " " + word : word;
+    if (cur && ctx.measureText(test).width > maxW) {
+      lines.push(cur);
+      cur = word;
+    } else {
+      cur = test;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
 }
 
 /** Schwebende Schadenszahl an der Trefferstelle, blendet nach oben aus. */
