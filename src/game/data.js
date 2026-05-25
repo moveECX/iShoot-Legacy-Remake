@@ -61,7 +61,7 @@ export class GameData {
     for (const rs of this.rules) {
       if (rs.fallDamage === undefined) rs.fallDamage = true;
       if (rs.fastForward === undefined) rs.fastForward = true;
-      if (rs.fastForwardSpeed === undefined) rs.fastForwardSpeed = 3;
+      if (rs.fastForwardSpeed === undefined) rs.fastForwardSpeed = 1;
     }
     this._addAllWeaponsRuleSet();
     this._mergeDefaults();

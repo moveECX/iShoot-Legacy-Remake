@@ -52,6 +52,10 @@ export class RuleEditor {
       const curVal = currentOverrides[f.key] !== undefined ? currentOverrides[f.key] : baseVal;
       const row = document.createElement("div");
       row.className = "rule-row";
+      // Hover-Tooltip mit ausführlicher Erklärung der Regel (falls vorhanden).
+      const tipKey = "ruleTip." + f.key;
+      const tip = t(tipKey);
+      if (tip && tip !== tipKey) row.title = tip;
       if (f.type === "bool") {
         row.innerHTML = `
           <label>${t("rule." + f.key)}</label>

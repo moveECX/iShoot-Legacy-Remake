@@ -9,13 +9,17 @@
 import { createWeapon } from "./weapon.js";
 import { AI } from "./ai.js";
 import { Quote } from "./effects.js";
+import { tQuote } from "../i18n/index.js";
 
 /** Zufälliger Spruch des Tanks + Sprechblase. Auch Menschen können Sprüche
  *  abgeben (wenn ihre Persönlichkeit welche hat). `talkingCPUs` ist global. */
 function sayQuote(match, tank, quotes, weaponName, victimName) {
   if (!match.rules.talkingCPUs) return;
   if (!quotes || quotes.length === 0) return;
-  let line = quotes[(Math.random() * quotes.length) | 0];
+  // Quelle ist der englische Spruch; in die aktuelle Sprache übersetzen,
+  // DANN die Platzhalter füllen (Reihenfolge wichtig: %w/%t stehen auch im
+  // übersetzten Text).
+  let line = tQuote(quotes[(Math.random() * quotes.length) | 0]);
   // Original-Convention: %w = Waffenname, %t = Name des Opfers
   if (weaponName)  line = line.replace("%w", weaponName);
   if (victimName) line = line.replace("%t", victimName);

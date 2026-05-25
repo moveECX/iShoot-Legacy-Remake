@@ -85,22 +85,39 @@ export class Hud {
     let weaponBoxLeft = WIDTH;
 
     if (cur) {
-      // -- Top-Left: Aktiver Spieler (Name, HP/Cash, Fuel-Balken)
+      // -- Top-Left: Aktiver Spieler (Name, HP/Cash, Fuel-Balken).
+      //    Box-Breite passt sich dem (übersetzten) Inhalt an; der Fuel-Balken
+      //    beginnt hinter dem Label und endet vor dem Zahlenwert — so gibt es
+      //    in keiner Sprache eine Überschneidung.
       ctx.textAlign = "start";
-      const boxW = 128;
+      const PADX = 5, GAP = 5;
+      const c = cur.color;
+      const colorRGB = `rgb(${(c.r * 255) | 0},${(c.g * 255) | 0},${(c.b * 255) | 0})`;
+      const hpCash = `${t("hud.hp")} ${cur.health.toFixed(0)}   $${fmtCash(cur.cash)}`;
+      const fuelLabel = t("hud.fuel");
+      const fuelVal = String(cur.fuel | 0);
+      const fuelLabelW = ctx.measureText(fuelLabel).width;
+      const fuelValW = ctx.measureText(fuelVal).width;
+      const MIN_BAR = 40;
+      const fuelRowW = fuelLabelW + GAP + MIN_BAR + GAP + fuelValW;
+      const contentW = Math.max(
+        ctx.measureText(cur.name).width, ctx.measureText(hpCash).width, fuelRowW);
+      const boxW = Math.ceil(PADX + contentW + PADX);
       ctx.fillStyle = "rgba(0,0,0,.55)";
       ctx.fillRect(2, 2, boxW, 33);
-      const c = cur.color;
-      ctx.fillStyle = `rgb(${(c.r * 255) | 0},${(c.g * 255) | 0},${(c.b * 255) | 0})`;
-      ctx.fillText(cur.name, 5, 10);
+      ctx.fillStyle = colorRGB;
+      ctx.fillText(cur.name, 2 + PADX, 10);
       ctx.fillStyle = "#fff";
-      ctx.fillText(`${t("hud.hp")} ${cur.health.toFixed(0)}   $${fmtCash(cur.cash)}`, 5, 20);
+      ctx.fillText(hpCash, 2 + PADX, 20);
 
-      // Fuel-Balken (analog zur HP-Bar über den Tanks).
+      // Fuel-Zeile: Label, dann Balken bis kurz vor den rechtsbündigen Wert.
       const maxFuel = m.rules.fuel ?? 0;
       ctx.fillStyle = "#fff";
-      ctx.fillText(t("hud.fuel"), 5, 30);
-      const fbX = 28, fbY = 25, fbW = 74, fbH = 5;
+      ctx.fillText(fuelLabel, 2 + PADX, 30);
+      const fbX = 2 + PADX + fuelLabelW + GAP;
+      const valRight = 2 + boxW - PADX;
+      const fbW = Math.max(8, valRight - fuelValW - GAP - fbX);
+      const fbY = 25, fbH = 5;
       ctx.fillStyle = "rgba(255,255,255,.18)";
       ctx.fillRect(fbX, fbY, fbW, fbH);
       if (maxFuel > 0) {
@@ -110,7 +127,7 @@ export class Hud {
       }
       ctx.textAlign = "end";
       ctx.fillStyle = "#cfe8f5";
-      ctx.fillText(String(cur.fuel | 0), 2 + boxW - 4, 30);
+      ctx.fillText(fuelVal, valRight, 30);
       ctx.textAlign = "start";
 
       // -- Top-Right: Aim

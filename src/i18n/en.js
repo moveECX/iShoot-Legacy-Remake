@@ -111,6 +111,26 @@ export default {
     "rule.fastForward": "Fast-forward on CPU",
     "rule.fastForwardSpeed": "Fast-forward speed",
 
+    // Rule tooltips (hover explanations shown in the rule editor).
+    "ruleTip.gravity": "Strength of gravity pulling shells down. Higher means shells drop faster and fly a shorter distance.",
+    "ruleTip.maxWind": "Maximum wind strength per round. Wind pushes shells sideways in flight; higher values mean more drift to compensate for.",
+    "ruleTip.tankHealth": "Starting hit points of every tank. Higher means tanks survive more hits before being destroyed.",
+    "ruleTip.fuel": "Fuel each tank receives per turn for driving. Every step costs one unit; it refills at the start of each turn.",
+    "ruleTip.startingCash": "Money every player begins the match with, to spend in the shop on extra weapons.",
+    "ruleTip.cashPerRoundIncrease": "Bonus money granted to each surviving tank at the start of a new turn cycle.",
+    "ruleTip.cashPerKill": "Money awarded for destroying an enemy tank.",
+    "ruleTip.cashPerDamage": "Money awarded per point of damage dealt to enemies.",
+    "ruleTip.maxCashPerRound": "Upper limit on how much money a tank can earn within a single round.",
+    "ruleTip.splineLandscapeFrequency": "Chance (in percent) that a round uses a procedurally generated hill landscape instead of a photo map.",
+    "ruleTip.fallDamage": "When on, tanks take damage if they fall from a great height after the ground beneath them is blasted away.",
+    "ruleTip.talkingCPUs": "When on, tanks show speech-bubble taunts when they fire, score a kill, or are destroyed.",
+    "ruleTip.weaponSmoke": "When on, projectiles leave a smoke trail while in flight.",
+    "ruleTip.fallingDirt": "When on, destroyed terrain collapses and loose dirt cascades down into craters.",
+    "ruleTip.dirtClods": "When on, explosions throw small clods of dirt that land and form new terrain.",
+    "ruleTip.steepDriving": "When on, tanks can climb much steeper slopes while driving.",
+    "ruleTip.fastForward": "When on, CPU turns are sped up (see Fast-forward speed). Speed-up pauses while a speech bubble is shown so taunts stay readable.",
+    "ruleTip.fastForwardSpeed": "How fast CPU turns play during fast-forward: 1 = normal speed, higher = faster (up to 8×). Only the shot's flight and the terrain settling are sped up.",
+
     // ---- weapon editor ----
     "weaponEditor.heading": "Weapon Editor",
     "weaponEditor.newWeapon": "+ New weapon",
